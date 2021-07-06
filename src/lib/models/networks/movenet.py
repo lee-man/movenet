@@ -49,6 +49,7 @@ class MoveNet(nn.Module):
     '''
     def __init__(self, backbone, heads, head_conv):
         self.out_channels = 256
+        self.backbone = backbone
         self.heads = heads
 
         super(MoveNet, self).__init__()
