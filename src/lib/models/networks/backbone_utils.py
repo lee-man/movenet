@@ -153,8 +153,8 @@ def mobilenet_backbone(
     # mli: the following block indices refer to the last layer of each stage (s4, s8, s16, s32)
     stage_indices = [2, 4, 7, 14]
     num_stages = len(stage_indices)
-    print("# stages: ", num_stages)
-    print("Stage indicse: ", stage_indices)
+    # print("# stages: ", num_stages)
+    # print("Stage indicse: ", stage_indices)
 
     # find the index of the layer from which we wont freeze
     assert 0 <= trainable_layers <= num_stages
@@ -175,7 +175,7 @@ def mobilenet_backbone(
             returned_layers = list(range(num_stages))
         assert min(returned_layers) >= 0 and max(returned_layers) < num_stages
         return_layers = {f'{stage_indices[k]}': str(v) for v, k in enumerate(returned_layers)}
-        print("Return layers: ", return_layers)
+        # print("Return layers: ", return_layers)
 
         in_channels_list = [backbone[stage_indices[i]].out_channels for i in returned_layers]
         return BackboneWithFPN(backbone, return_layers, in_channels_list, out_channels, extra_blocks=extra_blocks)
@@ -188,7 +188,7 @@ def mobilenet_backbone(
         m.out_channels = out_channels
         return m
 
-
+'''
 # test the functionality
 if __name__=='__main__':
     """
@@ -215,5 +215,5 @@ if __name__=='__main__':
     # compute the output
     output = backbone(x)
     print([(k, v.shape) for k, v in output.items()])
-    
+'''
     
