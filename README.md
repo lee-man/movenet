@@ -1,5 +1,5 @@
 # MoveNet
-Unofficial implementation of MoveNet from Google. This repo is heavily borrowed from [CenterNet](https://github.com/xingyizhou/CenterNet) and [TorchVision](https://github.com/pytorch/pytorch).
+Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html) from Google. This repo is heavily borrowed from [CenterNet](https://github.com/xingyizhou/CenterNet) and [TorchVision](https://github.com/pytorch/pytorch). The current code is still under development and may not be correct.
 
 # Objects as Points
 Object detection, 3D detection, and pose estimation using center point detection:
