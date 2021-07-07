@@ -246,7 +246,7 @@ class opts(object):
         opt.reg_hp_offset = (not opt.not_reg_hp_offset) and opt.hm_hp
 
         if opt.head_conv == -1:  # init default head_conv
-            opt.head_conv = 256 if 'dla' in opt.arch or 'mobilenet' in opt.arch else 64
+            opt.head_conv = 256 if 'dla' in opt.arch or 'movenet' in opt.arch else 64
         opt.pad = 127 if 'hourglass' in opt.arch else 31
         opt.num_stacks = 2 if opt.arch == 'hourglass' else 1
 
