@@ -90,7 +90,7 @@ if __name__ == "__main__":
         help="path to a json file in coco format")
     parser.add_argument("-o", "--output_json", dest="output_json", default="person_keypoints_train2017_filtered.json",
         help="path to save the output json")
-    parser.add_argument("-c", "--counts", dest="counts", default=2,
+    parser.add_argument("-c", "--counts", dest="counts", type=int, default=2,
         help="Maximun human counts in a single image, e.g. -c 2 for training data, -c 1 for validation data")
 
     args = parser.parse_args()
