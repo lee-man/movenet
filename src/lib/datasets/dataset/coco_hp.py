@@ -177,7 +177,7 @@ class COCOHPSP(data.Dataset):
                 [11, 12], [13, 14], [15, 16]]
 
     def __init__(self, opt, split, sp=False):
-        super(COCOHP, self).__init__()
+        super(COCOHPSP, self).__init__()
         self.edges = [[0, 1], [0, 2], [1, 3], [2, 4],
                       [4, 6], [3, 5], [5, 6],
                       [5, 7], [7, 9], [6, 8], [8, 10],
