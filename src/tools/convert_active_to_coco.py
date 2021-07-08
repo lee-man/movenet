@@ -61,7 +61,7 @@ for img_id in range(img_num):
 
 
     #bbox extract from annotated kps
-    annot_kps = kps[kps[:,2]==1,:].reshape(-1,3)
+    annot_kps = kps.reshape(-1,3)
     xmin = np.min(annot_kps[:,0])
     ymin = np.min(annot_kps[:,1])
     xmax = np.max(annot_kps[:,0])
