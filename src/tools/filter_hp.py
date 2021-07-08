@@ -26,15 +26,13 @@ class CocoFilter():
         # image_infos
         filtered_image_infos = list(map(lambda image_id: image_id_to_image_info[image_id], filtered_person_image_ids))
         self.new_images = filtered_image_infos
-        print("Filtered annotation length: ", len(filtered_image_infos))
+        print("Filtered image length: ", len(filtered_image_infos))
         print("E.g.,", self.new_images[0])
         # annotation_infos
         filterted_annotation_infos = list(filter(lambda annotation_info: annotation_info["image_id"] in filtered_person_image_ids, annotation_infos))
         self.new_annotations = filterted_annotation_infos
-        print("Filtered image length: ", len(filterted_annotation_infos))
+        print("Filtered annotation length: ", len(filterted_annotation_infos))
         print("E.g.,", self.new_annotations[0])
-
-        exit()
 
 
     def main(self, args):
