@@ -56,7 +56,7 @@ for img_id in range(img_num):
         if (joint_mapping[str(jid)] == -1): continue
         kps[jid][0] = active[img_id]["joints"][jid][0]
         kps[jid][1] = active[img_id]["joints"][jid][1]
-        kps[jid][2] = active[img_id]["joint_vis"] + 1
+        kps[jid][2] = active[img_id]["joint_vis"][jid] + 1
     kps[1:5] = np.zeros((4, 3))
 
 
