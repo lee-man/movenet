@@ -78,7 +78,7 @@ for img_id in range(img_num):
         bbox[1] = (ymin + ymax)/2. - height/2*1.2
         bbox[2] = width*1.2
         bbox[3] = height*1.2
-    person_dict = {'id': aid, 'image_id': aid, 'category_id': 1, 'area': bbox[2]*bbox[3],'bbox':bbox.tolist(), 'iscrowd': 0, 'keypoints': kps.reshape(-1).tolist(), 'num_keypoints':int(np.su(kps[:,2]==1))}
+    person_dict = {'id': aid, 'image_id': aid, 'category_id': 1, 'area': bbox[2]*bbox[3],'bbox':bbox.tolist(), 'iscrowd': 0, 'keypoints': kps.reshape(-1).tolist(), 'num_keypoints':int(np.sum(kps[:,2]==1))}
     coco['annotations'].append(person_dict)
     aid += 1
 
