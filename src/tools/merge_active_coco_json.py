@@ -19,7 +19,7 @@ images = []
 for coco_image in coco['images']:
   images.append(coco_image)
 for active_image in coco['images']:
-  images.append(coco_image)
+  images.append(active_image)
 annotations = []
 for coco_annotation in coco['annotations']:
   annotations.append(coco_annotation)
