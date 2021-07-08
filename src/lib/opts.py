@@ -67,7 +67,7 @@ class opts(object):
                                  help='conv layer channels for output head'
                                       '0 for no conv layer'
                                       '-1 for default setting: '
-                                      '64 for resnets, 256 for dla and 256 for mobilenet.')
+                                      '64 for resnets, 256 for dla and 256 for movenet.')
         self.parser.add_argument('--down_ratio', type=int, default=4,
                                  help='output stride. Currently only supports 4.')
 
