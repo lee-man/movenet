@@ -18,7 +18,7 @@ with open(active_path) as json_file:
 images = []
 for coco_image in coco['images']:
   images.append(coco_image)
-for active_image in coco['images']:
+for active_image in active['images']:
   images.append(active_image)
 annotations = []
 for coco_annotation in coco['annotations']:
