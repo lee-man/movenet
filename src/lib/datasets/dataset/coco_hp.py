@@ -275,7 +275,7 @@ class COCOHPSP_MERGE(data.Dataset):
         # coco_eval.summarize()
 
 
-class COCOHPSP_MERGE(data.Dataset):
+class COCOHPSP(data.Dataset):
     """
     The order of joints:
         KEYPOINT_DICT = {
