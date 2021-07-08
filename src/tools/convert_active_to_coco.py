@@ -35,7 +35,7 @@ COCO_PERSON_KEYPOINT_NAMES = [
 ]
 '''
 joint_mapping = {'0': 16, '1': 14, '2': 12, '3': 11, '4': 13, '5': 15, '6': -1, '7': -1, '8': -1, '9': 0, '10': 10, '11': 8, '12': 6, '13': 5, '14': 7, '15': 9}
-joint_num = 15
+joint_num = 17
 img_num = len(active)
 print("image size: ", img_num)
 
