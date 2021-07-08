@@ -14,7 +14,7 @@ class opts(object):
         self.parser.add_argument('task', default='multi_pose',
                                  help='ctdet | ddd | multi_pose | exdet')
         self.parser.add_argument('--dataset', default='coco_hp',
-                                 help='coco | kitti | coco_hp | pascal')
+                                 help='coco | kitti | coco_hp | pascal | coco_hpsp')
         self.parser.add_argument('--exp_id', default='default')
         self.parser.add_argument('--test', action='store_true')
         self.parser.add_argument('--debug', type=int, default=0,

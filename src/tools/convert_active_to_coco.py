@@ -1,4 +1,3 @@
-from scipy.io import loadmat, savemat
 from PIL import Image
 import os
 import os.path as osp
