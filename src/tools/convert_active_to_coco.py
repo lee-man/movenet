@@ -82,31 +82,7 @@ for img_id in range(img_num):
     coco['annotations'].append(person_dict)
     aid += 1
 
-category = {
-    "supercategory": "person",
-    "id": 1,  # to be same as COCO, not using 0
-    "name": "person",
-    "skeleton": [[0,1],
-        [1,2], 
-        [2,6], 
-        [7,12], 
-        [12,11], 
-        [11,10], 
-        [5,4], 
-        [4,3], 
-        [3,6], 
-        [7,13], 
-        [13,14], 
-        [14,15], 
-        [6,7], 
-        [7,8], 
-        [8,9]] ,
-    "keypoints": ["r_ankle", "r_knee","r_hip", 
-                    "l_hip", "l_knee", "l_ankle",
-                  "pelvis", "throax",
-                  "upper_neck", "head_top",
-                  "r_wrist", "r_elbow", "r_shoulder",
-                  "l_shoulder", "l_elbow", "l_wrist"]}
+category = {"supercategory": "person","id": 1,"name": "person","keypoints": ["nose","left_eye","right_eye","left_ear","right_ear","left_shoulder","right_shoulder","left_elbow","right_elbow","left_wrist","right_wrist","left_hip","right_hip","left_knee","right_knee","left_ankle","right_ankle"],"skeleton": [[16,14],[14,12],[17,15],[15,13],[12,13],[6,12],[7,13],[6,7],[6,8],[7,9],[8,10],[9,11],[2,3],[1,2],[1,3],[2,4],[3,5],[4,6],[5,7]]}
 
 coco['categories'] = [category]
 
