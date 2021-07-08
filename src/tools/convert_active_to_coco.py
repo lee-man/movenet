@@ -6,7 +6,7 @@ import json
 
 db_type = 'train' # train, test
 annot_path = "active.json"
-# save_path = '../annotations/' + db_type + '.json'
+save_path = "active_coco.json"
 
 print("Loading Acitve dataset...")
 with open(annot_path) as json_file:
@@ -54,9 +54,9 @@ for img_id in range(img_num):
     #kps
     for jid in range(16):
         if (joint_mapping[str(jid)] == -1): continue
-        kps[jid][0] = active["joints"][jid][0]
-        kps[jid][1] = active["joints"][jid][1]
-        kps[jid][2] = active["joint_vis"] + 1
+        kps[jid][0] = active[img_id]["joints"][jid][0]
+        kps[jid][1] = active[img_id]["joints"][jid][1]
+        kps[jid][2] = active[img_id]["joint_vis"] + 1
     kps[1:5] = np.zeros((4, 3))
 
 
