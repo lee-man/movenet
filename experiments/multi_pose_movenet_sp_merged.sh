@@ -1,5 +1,5 @@
 cd src
-python main.py multi_pose --exp_id cocosp_merge_movenet --dataset coco_hpsp_merge --arch movenet --batch_size 24 --master_batch 4 --lr 2.5e-4 --gpus 0,1,2,3 --num_epochs 150 --lr_step 40 --num_workers 16 --resume
+python main.py multi_pose --exp_id cocosp_merge_movenet --dataset coco_hpsp_merge --arch movenet --batch_size 24 --master_batch 4 --lr 2.5e-4 --gpus 0,1,2,3 --num_epochs 250 --lr_step 40 --num_workers 16 --resume
 # test
 python test.py multi_pose --exp_id cocosp_merge_movenet --dataset coco_hpsp_merge --arch movenet --keep_res --resume
 # flip test
