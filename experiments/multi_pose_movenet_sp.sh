@@ -6,4 +6,4 @@ python test.py multi_pose --exp_id cocosp_movenet --dataset coco_hpsp --arch mov
 python test.py multi_pose --exp_id cocosp_movenet --dataset coco_hpsp --arch movenet --keep_res --resume --flip_test
 cd ..
 
-# python demo.py multi_pose --dataset coco_hpsp --arch movenet --demo ../images --load_model ../models/model_best.pth
+# python demo.py multi_pose --dataset coco_hpsp --arch movenet --demo ../images --load_model ../models/model_best.pth --K 1 --gpus -1
