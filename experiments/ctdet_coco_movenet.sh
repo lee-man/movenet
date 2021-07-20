@@ -1,6 +1,6 @@
 cd src
 # train
-python main.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --batch_size 64 --master_batch 18 --lr 5e-4 --gpus 0,1,2,3 --num_workers 16
+python main.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --batch_size 64 --master_batch 18 --lr 5e-4 --gpus 0,1,2,3 --num_workers 16 --resume
 # test
 python test.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --keep_res --resume
 # flip test
