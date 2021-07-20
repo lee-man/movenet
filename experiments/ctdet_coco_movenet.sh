@@ -1,10 +1,10 @@
 cd src
 # train
-python main.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --batch_size 114 --master_batch 18 --lr 5e-4 --gpus 0,1,2,3 --num_workers 16
+python main.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --batch_size 64 --master_batch 18 --lr 5e-4 --gpus 0,1,2,3 --num_workers 16
 # test
-python test.py ctdet --dataset coco --exp_id coco_movenet --arch resdcn_18 --keep_res --resume
+python test.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --keep_res --resume
 # flip test
-python test.py ctdet --dataset coco --exp_id coco_movenet --arch resdcn_18 --keep_res --resume --flip_test 
+python test.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --keep_res --resume --flip_test 
 # multi scale test
-python test.py ctdet --dataset coco --exp_id coco_movenet --arch resdcn_18 --keep_res --resume --flip_test --test_scales 0.5,0.75,1,1.25,1.5
+python test.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --keep_res --resume --flip_test --test_scales 0.5,0.75,1,1.25,1.5
 cd ..
