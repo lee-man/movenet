@@ -13,7 +13,7 @@ try:
 except:
   print('NMS not imported! If you need it,'
         ' do \n cd $CenterNet_ROOT/src/lib/external \n make')
-from models.decode import multi_pose_decode
+from models.decode import multi_pose_decode, single_pose_decode
 from models.utils import flip_tensor, flip_lr_off, flip_lr
 from utils.image import get_affine_transform
 from utils.post_process import multi_pose_post_process
@@ -28,7 +28,7 @@ class MultiPoseDetector(BaseDetector):
 
   def process(self, images, return_time=False):
     with torch.no_grad():
-      torch.cuda.synchronize()
+      # torch.cuda.synchronize()
       output = self.model(images)[-1]
       output['hm'] = output['hm'].sigmoid_()
       if self.opt.hm_hp and not self.opt.mse_loss:
@@ -37,7 +37,7 @@ class MultiPoseDetector(BaseDetector):
       reg = output['reg'] if self.opt.reg_offset else None
       hm_hp = output['hm_hp'] if self.opt.hm_hp else None
       hp_offset = output['hp_offset'] if self.opt.reg_hp_offset else None
-      torch.cuda.synchronize()
+      # torch.cuda.synchronize()
       forward_time = time.time()
       
       if self.opt.flip_test:
@@ -50,7 +50,7 @@ class MultiPoseDetector(BaseDetector):
         reg = reg[0:1] if reg is not None else None
         hp_offset = hp_offset[0:1] if hp_offset is not None else None
       
-      dets = multi_pose_decode(
+      dets = single_pose_decode(
         output['hm'], output['wh'], output['hps'],
         reg=reg, hm_hp=hm_hp, hp_offset=hp_offset, K=self.opt.K)
 
