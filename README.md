@@ -7,6 +7,8 @@ Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-
 3. In CenterNet, authors use pre-trained object detection model as the initial model. Here, I just use the pre-trained MobileNet v2 from ImageNet classification task, as I haven't found any available pre-trained MobileNet_v2 + FPN.
 4. The keypoint decoding processing is quite different from MoveNet. I will modify this part as soon as possible.
 
+* I record the data/target preprocessing and preparation in [PREPROCESSING.md](readme/PREPROCESSING.md) out of my own need.
+
 # Objects as Points
 Object detection, 3D detection, and pose estimation using center point detection:
 ![](readme/fig2.png)
