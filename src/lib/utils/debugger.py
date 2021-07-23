@@ -22,7 +22,7 @@ class Debugger(object):
       self.colors = self.colors.reshape(-1)[::-1].reshape(len(colors), 1, 1, 3)
       self.colors = np.clip(self.colors, 0., 0.6 * 255).astype(np.uint8)
     self.dim_scale = 1
-    if dataset == 'coco_hp' or 'coco_hpsp' or 'coco_hp_merge':
+    if dataset in ['coco_hp', 'coco_hpsp', 'coco_hp_merge']:
       self.names = ['p']
       self.num_class = 1
       self.num_joints = 17
@@ -67,6 +67,7 @@ class Debugger(object):
     # for bird view
     self.world_size = 64
     self.out_size = 384
+
 
   def add_img(self, img, img_id='default', revert_color=False):
     if revert_color:
