@@ -1,13 +1,20 @@
 # MoveNet
-Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html) from Google. This repo is heavily borrowed from [CenterNet](https://github.com/xingyizhou/CenterNet) and [TorchVision](https://github.com/pytorch/pytorch). The current code is still under development and may not be correct.
+Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html) from Google. This repo is heavily borrowed from [CenterNet](https://github.com/xingyizhou/CenterNet) and [TorchVision](https://github.com/pytorch/pytorch). The repo is still under development and there is still a long way to go.
+
+I will add documents about how to run the program and specify the modification I made.
 
 ## Major differences
-1. The prediction heads under the default setting of CenterNet (as well as COCO keypoint detection) is to estimate the bounding box and joint positions at the same time. Thus, the losses include (width, weight) regression loss and center point offset loss. The impact of these two losses can be elimintated via specifying options `--eval_oracle_offset` and `--eval_oracle_wh`.
+1. The prediction heads under the default setting of CenterNet (as well as COCO keypoint detection task) is to estimate the bounding box and joint positions at the same time. Thus, the losses include (width, weight) regression loss and center point offset loss. The impact of these two losses can be elimintated via specifying options `--eval_oracle_offset` and `--eval_oracle_wh`. I haven't used this setting, and will report the results later.
 2. The channel size of joint local offsets is 2*k (34 for COCO), while the channel size of current implementation is 2, as the feature map is shared across different keypoints in CenterNet.
 3. In CenterNet, authors use pre-trained object detection model as the initial model. Here, I just use the pre-trained MobileNet v2 from ImageNet classification task, as I haven't found any available pre-trained MobileNet_v2 + FPN.
 4. ~~The keypoint decoding processing is quite different from MoveNet. I will modify this part as soon as possible.~~
 
-* ~~I record the data/target preprocessing and preparation in [PREPROCESSING.md](readme/PREPROCESSING.md) out of my own need.~~
+## TODO
+1. Create a standalone `SinglePoseDetector/Trainer` class for MoveNet.
+2. Release the COCO object detection pre-trained model based on MoveNet.
+3. Add ONNX convertion script, and release MoveNet-based Android prototype based on Tensorflow Lite.
+
+Below is the original README from CenterNet. It's ane excellent work and I realy like it.
 
 # Objects as Points
 Object detection, 3D detection, and pose estimation using center point detection:

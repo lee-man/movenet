@@ -109,3 +109,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# image file in images/
+images/*.jpg
+images/active/*.jpg
