@@ -5,9 +5,9 @@ Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-
 1. The prediction heads under the default setting of CenterNet (as well as COCO keypoint detection) is to estimate the bounding box and joint positions at the same time. Thus, the losses include (width, weight) regression loss and center point offset loss. The impact of these two losses can be elimintated via specifying options `--eval_oracle_offset` and `--eval_oracle_wh`.
 2. The channel size of joint local offsets is 2*k (34 for COCO), while the channel size of current implementation is 2, as the feature map is shared across different keypoints in CenterNet.
 3. In CenterNet, authors use pre-trained object detection model as the initial model. Here, I just use the pre-trained MobileNet v2 from ImageNet classification task, as I haven't found any available pre-trained MobileNet_v2 + FPN.
-4. The keypoint decoding processing is quite different from MoveNet. I will modify this part as soon as possible.
+4. ~~The keypoint decoding processing is quite different from MoveNet. I will modify this part as soon as possible.~~
 
-* I record the data/target preprocessing and preparation in [PREPROCESSING.md](readme/PREPROCESSING.md) out of my own need.
+* ~~I record the data/target preprocessing and preparation in [PREPROCESSING.md](readme/PREPROCESSING.md) out of my own need.~~
 
 # Objects as Points
 Object detection, 3D detection, and pose estimation using center point detection:
