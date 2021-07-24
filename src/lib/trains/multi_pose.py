@@ -33,7 +33,17 @@ class MultiPoseLoss(torch.nn.Module):
       output['hm'] = _sigmoid(output['hm'])
       if opt.hm_hp and not opt.mse_loss:
         output['hm_hp'] = _sigmoid(output['hm_hp'])
-      
+
+      if opt.eval_oracle_wh:
+        output['wh'] = torch.from_numpy(gen_oracle_map(
+          batch['wh'].detach().cpu().numpy(), 
+          batch['ind'].detach().cpu().numpy(), 
+          output['wh'].shape[3], output['wh'].shape[2])).to(opt.device)
+      if opt.eval_oracle_offset:
+        output['reg'] = torch.from_numpy(gen_oracle_map(
+          batch['reg'].detach().cpu().numpy(), 
+          batch['ind'].detach().cpu().numpy(), 
+          output['reg'].shape[3], output['reg'].shape[2])).to(opt.device)
       if opt.eval_oracle_hmhp:
         output['hm_hp'] = batch['hm_hp']
       if opt.eval_oracle_hm:
