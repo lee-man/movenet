@@ -121,8 +121,8 @@ def _topk_channel_with_reg_kps(scores, reg_kps, K=40, delta=1.0, multipiler=5.0)
     weight_to_joints = torch.zeros_like(scores)
     joint_x = reg_kps[0, :, 0, 0, 0]
     joint_y = reg_kps[0, :, 0, 0, 1]
-    print(joint_x.size())
-    print(joint_y.size())
+    # print(joint_x.size())
+    # print(joint_y.size())
 
     y, x = np.ogrid[0:height, 0:width]
     y = np.repeat(np.expand_dims(y, axis=0), cat, axis=0)
@@ -166,7 +166,7 @@ def _topk_with_center(scores, K=40, delta=1.0, multipiler=1.0):
     This function is similar to `_topk`, expect the scroes are weighted by the inverse-distance from the frame center. As the pure inserse function goes down too fast, I add two hyper-parameters here: `delta` and `multiplier`. It's not clear how to tune these two parameters.
     '''
     batch, cat, height, width = scores.size()
-    print('scores size: ', scores.size())
+    # print('scores size: ', scores.size())
 
     weight_to_center = torch.zeros((height, width))
     y, x = np.ogrid[0:height, 0:width] # mli: borrowed from gaussian2D
@@ -664,7 +664,7 @@ def single_pose_decode(
     heat = _nms(heat)
     scores, inds, clses, ys, xs = _topk_with_center(heat, K=K)
     kps = _transpose_and_gather_feat(kps, inds)
-    print('kps size: ', kps.size())
+    # print('kps size: ', kps.size())
     kps = kps.view(batch, K, num_joints * 2)
     kps[..., ::2] += xs.view(batch, K, 1).expand(batch, K, num_joints)
     kps[..., 1::2] += ys.view(batch, K, 1).expand(batch, K, num_joints)
@@ -679,7 +679,7 @@ def single_pose_decode(
         ys = ys.view(batch, K, 1) + 0.5
     wh = _transpose_and_gather_feat(wh, inds)
     wh = wh.view(batch, K, 2)
-    print('wh size: ', wh.size())
+    # print('wh size: ', wh.size())
     clses = clses.view(batch, K, 1).float()
     scores = scores.view(batch, K, 1)
 
@@ -688,14 +688,14 @@ def single_pose_decode(
                         xs + wh[..., 0:1] / 2,
                         ys + wh[..., 1:2] / 2], dim=2)
     if hm_hp is not None:
-        print('hm_hp size: ', hm_hp.size())
+        # print('hm_hp size: ', hm_hp.size())
         hm_hp = _nms(hm_hp)
         # thresh = 0.1
         thresh = 0.0 # mli: ignore the threshold here.
         kps = kps.view(batch, K, num_joints, 2).permute(
             0, 2, 1, 3).contiguous()  # b x J x K x 2
         reg_kps = kps.unsqueeze(3).expand(batch, num_joints, K, K, 2)
-        print('reg_kps size: ', reg_kps.size())
+        # print('reg_kps size: ', reg_kps.size())
         # hm_score, hm_inds, hm_ys, hm_xs = _topk_channel(
         #     hm_hp, K=K)  # b x J x K
         hm_score, hm_inds, hm_ys, hm_xs = _topk_channel_with_reg_kps(hm_hp, reg_kps, K=K) # b x J x K
@@ -715,7 +715,7 @@ def single_pose_decode(
         hm_xs = (1 - mask) * (-10000) + mask * hm_xs
         hm_kps = torch.stack([hm_xs, hm_ys], dim=-1).unsqueeze(
             2).expand(batch, num_joints, K, K, 2)
-        print('hm_kps size: ', hm_kps.size())
+        # print('hm_kps size: ', hm_kps.size())
         dist = (((reg_kps - hm_kps) ** 2).sum(dim=4) ** 0.5)
         min_dist, min_ind = dist.min(dim=3)  # b x J x K
         hm_score = hm_score.gather(2, min_ind).unsqueeze(-1)  # b x J x K x 1
@@ -735,7 +735,7 @@ def single_pose_decode(
         mask = (hm_kps[..., 0:1] < l) + (hm_kps[..., 0:1] > r) + \
                (hm_kps[..., 1:2] < t) + (hm_kps[..., 1:2] > b) + \
                (hm_score < thresh) + (min_dist > (torch.max(b - t, r - l) * 0.3))
-        print('mask size: ', mask.size())
+        # print('mask size: ', mask.size())
         mask = (mask > 0).float().expand(batch, num_joints, K, 2)
         #   kps = (1 - mask) * hm_kps + mask * kps
         kps = hm_kps

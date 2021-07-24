@@ -9,4 +9,4 @@ python test.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --keep_
 python test.py ctdet --dataset coco --exp_id coco_movenet --arch movenet --keep_res --resume --flip_test --test_scales 0.5,0.75,1,1.25,1.5
 cd ..
 
-# python demo.py ctdet --dataset coco --arch movenet --demo ../images --load_model ../models/model_last.pth --gpus -1 --vis_thresh 0.3 --nms
+# python demo.py ctdet --dataset coco --arch movenet --demo ../images --load_model ../models/ctdet_movenet.pth --gpus -1 --vis_thresh 0.25 --nms
