@@ -1,5 +1,5 @@
 cd src
-python main.py multi_pose --exp_id coco_movenet --dataset coco_hp --arch movenet --batch_size 64 --master_batch 4 --lr 5e-4 --gpus 0,1,2,3 --num_epochs 320 --lr_step 270,300 --num_workers 16 --load_model ../models/ctdet_movenet.pth --eval_oracle_wh --eval_oracle_offset
+python main.py multi_pose --exp_id coco_movenet --dataset coco_hp --arch movenet --batch_size 64 --master_batch 4 --lr 5e-4 --gpus 0,1,2,3 --num_epochs 320 --lr_step 270,300 --num_workers 20 --load_model ../models/ctdet_movenet.pth
 # test
 python test.py multi_pose --exp_id coco_movenet --dataset coco_hp --arch movenet --keep_res --resume
 # flip test
