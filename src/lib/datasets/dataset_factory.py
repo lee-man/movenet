@@ -6,11 +6,13 @@ from .sample.ddd import DddDataset
 from .sample.exdet import EXDetDataset
 from .sample.ctdet import CTDetDataset
 from .sample.multi_pose import MultiPoseDataset
+from .sample.single_pose import SinglePoseDataset
 
 from .dataset.coco import COCO
 from .dataset.pascal import PascalVOC
 from .dataset.kitti import KITTI
-from .dataset.coco_hp import COCOHP, COCOHPSP, COCOHPSP_MERGE
+from .dataset.coco_hp import COCOHP
+from .dataset.active import ACTIVE
 
 
 dataset_factory = {
@@ -18,15 +20,15 @@ dataset_factory = {
   'pascal': PascalVOC,
   'kitti': KITTI,
   'coco_hp': COCOHP,
-  'coco_hpsp': COCOHPSP,
-  'coco_hpsp_merge': COCOHPSP_MERGE
+  'active': ACTIVE
 }
 
 _sample_factory = {
   'exdet': EXDetDataset,
   'ctdet': CTDetDataset,
   'ddd': DddDataset,
-  'multi_pose': MultiPoseDataset
+  'multi_pose': MultiPoseDataset,
+  'signle_pose': SinglePoseDataset,
 }
 
 

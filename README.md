@@ -12,7 +12,7 @@ I will add documents about how to run the program and specify the modification I
 ## TODO
 1. Create a standalone `SinglePoseDetector/Trainer` class for MoveNet.
 2. Release the COCO object detection pre-trained model based on MoveNet.
-3. Add ONNX convertion script, and release MoveNet-based Android prototype based on Tensorflow Lite.
+3. Add ONNX convertion script, and release [MoveNet-based Android prototype](https://github.com/tensorflow/examples/tree/master/lite/examples/pose_estimation/android) based on Tensorflow Lite.
 
 Below is the original README from CenterNet. It's ane excellent work and I realy like it.
 

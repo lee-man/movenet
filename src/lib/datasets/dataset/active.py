@@ -11,8 +11,9 @@ import os
 import torch.utils.data as data
 
 
-class COCOHP(data.Dataset):
+class ACTIVE(data.Dataset):
     """
+    The modified single-pose version of COCO human pose estimation dataset, naming `Active` dataset here. The main difference is that we limit the human counts in one single image to be less than or equal to 2.
     The order of joints:
         KEYPOINT_DICT = {
         'nose': 0,
@@ -45,7 +46,7 @@ class COCOHP(data.Dataset):
                 [11, 12], [13, 14], [15, 16]]
 
     def __init__(self, opt, split, sp=False):
-        super(COCOHP, self).__init__()
+        super(ACTIVE, self).__init__()
         self.edges = [[0, 1], [0, 2], [1, 3], [2, 4],
                       [4, 6], [3, 5], [5, 6],
                       [5, 7], [7, 9], [6, 8], [8, 10],
@@ -53,17 +54,15 @@ class COCOHP(data.Dataset):
                       [12, 14], [14, 16], [11, 13], [13, 15]]
 
         self.acc_idxs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-        self.data_dir = os.path.join(opt.data_dir, 'coco')
-        self.img_dir = os.path.join(self.data_dir, '{}2017'.format(split))
+        self.data_dir = os.path.join(opt.data_dir, 'active')
+        self.img_dir = os.path.join(self.data_dir, '{}'.format(split))
         if split == 'test':
-            self.annot_path = os.path.join(
-                self.data_dir, 'annotations',
-                'image_info_test-dev2017.json').format(split)
+            raise ValueError('No supported for the testing dataset.')
         else:
             self.annot_path = os.path.join(
                 self.data_dir, 'annotations',
-                'person_keypoints_{}2017.json').format(split)
-        self.max_objs = 32
+                'active_{}.json').format(split)
+        self.max_objs = 2
         self._data_rng = np.random.RandomState(123)
         self._eig_val = np.array([0.2141788, 0.01817699, 0.00341571],
                                  dtype=np.float32)
@@ -75,7 +74,7 @@ class COCOHP(data.Dataset):
         self.split = split
         self.opt = opt
 
-        print('==> initializing coco 2017 {} data.'.format(split))
+        print('==> initializing active {} data.'.format(split))
         self.coco = coco.COCO(self.annot_path)
         image_ids = self.coco.getImgIds()
 
@@ -137,7 +136,8 @@ class COCOHP(data.Dataset):
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
-        coco_eval = COCOeval(self.coco, coco_dets, "bbox")
-        coco_eval.evaluate()
-        coco_eval.accumulate()
-        coco_eval.summarize()
+        # mli: do not conduct the bounding box evaluation.
+        # coco_eval = COCOeval(self.coco, coco_dets, "bbox")
+        # coco_eval.evaluate()
+        # coco_eval.accumulate()
+        # coco_eval.summarize()

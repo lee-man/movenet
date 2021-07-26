@@ -13,9 +13,12 @@ from utils.post_process import multi_pose_post_process
 from utils.oracle_utils import gen_oracle_map
 from .base_trainer import BaseTrainer
 
-class MultiPoseLoss(torch.nn.Module):
+class SinglePoseLoss(torch.nn.Module):
+  '''
+  Same as MultiPoseLoss.
+  '''
   def __init__(self, opt):
-    super(MultiPoseLoss, self).__init__()
+    super(SinglePoseLoss, self).__init__()
     self.crit = FocalLoss()
     self.crit_hm_hp = torch.nn.MSELoss() if opt.mse_loss else FocalLoss()
     self.crit_kp = RegWeightedL1Loss() if not opt.dense_hp else \
@@ -33,7 +36,17 @@ class MultiPoseLoss(torch.nn.Module):
       output['hm'] = _sigmoid(output['hm'])
       if opt.hm_hp and not opt.mse_loss:
         output['hm_hp'] = _sigmoid(output['hm_hp'])
-      
+      # mli: add wh oracle and center point oracle here.
+      if opt.eval_oracle_wh:
+        output['wh'] = torch.from_numpy(gen_oracle_map(
+          batch['wh'].detach().cpu().numpy(), 
+          batch['ind'].detach().cpu().numpy(), 
+          output['wh'].shape[3], output['wh'].shape[2])).to(opt.device)
+      if opt.eval_oracle_offset:
+        output['reg'] = torch.from_numpy(gen_oracle_map(
+          batch['reg'].detach().cpu().numpy(), 
+          batch['ind'].detach().cpu().numpy(), 
+          output['reg'].shape[3], output['reg'].shape[2])).to(opt.device)
       if opt.eval_oracle_hmhp:
         output['hm_hp'] = batch['hm_hp']
       if opt.eval_oracle_hm:
@@ -84,14 +97,14 @@ class MultiPoseLoss(torch.nn.Module):
                   'wh_loss': wh_loss, 'off_loss': off_loss}
     return loss, loss_stats
 
-class MultiPoseTrainer(BaseTrainer):
+class SinglePoseTrainer(BaseTrainer):
   def __init__(self, opt, model, optimizer=None):
-    super(MultiPoseTrainer, self).__init__(opt, model, optimizer=optimizer)
+    super(SinglePoseTrainer, self).__init__(opt, model, optimizer=optimizer)
   
   def _get_losses(self, opt):
     loss_states = ['loss', 'hm_loss', 'hp_loss', 'hm_hp_loss', 
                    'hp_offset_loss', 'wh_loss', 'off_loss']
-    loss = MultiPoseLoss(opt)
+    loss = SinglePoseLoss(opt)
     return loss_states, loss
 
   def debug(self, batch, output, iter_id):

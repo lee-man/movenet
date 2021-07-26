@@ -11,10 +11,10 @@ class opts(object):
     def __init__(self):
         self.parser = argparse.ArgumentParser()
         # basic experiment setting
-        self.parser.add_argument('task', default='multi_pose',
-                                 help='ctdet | ddd | multi_pose | exdet')
-        self.parser.add_argument('--dataset', default='coco_hp',
-                                 help='coco | kitti | coco_hp | pascal | coco_hpsp')
+        self.parser.add_argument('task', default='single_pose',
+                                 help='ctdet | ddd | multi_pose | exdet | single_pose')
+        self.parser.add_argument('--dataset', default='active',
+                                 help='coco | kitti | coco_hp | pascal | active')
         self.parser.add_argument('--exp_id', default='default')
         self.parser.add_argument('--test', action='store_true')
         self.parser.add_argument('--debug', type=int, default=0,
@@ -322,7 +322,6 @@ class opts(object):
             if opt.reg_offset:
                 opt.heads.update({'reg': 2})
         elif opt.task == 'multi_pose':
-            # mli: this is what we concern.
             # assert opt.dataset in ['coco_hp']
             opt.flip_idx = dataset.flip_idx
             opt.heads = {'hm': opt.num_classes, 'wh': 2, 'hps': 34}
@@ -332,6 +331,16 @@ class opts(object):
                 opt.heads.update({'hm_hp': 17})
             if opt.reg_hp_offset:
                 opt.heads.update({'hp_offset': 2})
+        elif opt.task == "single_pose":
+            # assert opt.dataset in ['coco_hp']
+            opt.flip_idx = dataset.flip_idx
+            opt.heads = {'hm': opt.num_classes, 'wh': 2, 'hps': 34}
+            if opt.reg_offset:
+                opt.heads.update({'reg': 2})
+            if opt.hm_hp:
+                opt.heads.update({'hm_hp': 17})
+            if opt.reg_hp_offset:
+                opt.heads.update({'hp_offset': 2}) # TODO: change to 34
         else:
             assert 0, 'task not defined!'
         print('heads', opt.heads)
