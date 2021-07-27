@@ -1,5 +1,15 @@
 import json
 from pathlib import Path
+import sys
+import shutil
+
+'''
+Filtering images with single-human (or double-human) poses in COCO dataset.
+Usage:
+Put the file under `data/` directory and run it.
+By default, it will copy the images to `active_coco` directory.
+
+'''
 
 class CocoFilter():
     """ Filters the COCO dataset
@@ -33,12 +43,25 @@ class CocoFilter():
         self.new_annotations = filterted_annotation_infos
         print("Filtered annotation length: ", len(filterted_annotation_infos))
         print("E.g.,", self.new_annotations[0])
+    
+    def move_files(self):
+        print("Start moving data...")
+        for image_info in self.new_images:
+            file_name = image_info["file_name"]
+            file_path = self.in_data_path + Path(file_name)
+            file_path_target = self.out_data_path + Path(file_name)
+            shutil.copy(file_path, file_path_target)
+        print("Completed moving data.")
 
 
     def main(self, args):
         # Open json
-        self.input_json_path = Path(args.input_json)
-        self.output_json_path = Path(args.output_json)
+        self.input_json_path = Path('coco', 'annotations', args.input_json)
+        self.output_json_path = Path('active', 'annotations', args.output_json)
+        # data dir
+        self.in_data_path = Path('coco', args.split)
+        self.out_data_path = Path('active', args.split)
+        # self.out_data_pathmkdir(parents=True, exist_ok=True)
         self.counts = args.counts
 
         # Verify input path exists
@@ -78,6 +101,9 @@ class CocoFilter():
             json.dump(new_master_json, output_file)
 
         print('Filtered json saved.')
+        
+        self.move_files()
+
 
 if __name__ == "__main__":
     import argparse
@@ -88,8 +114,10 @@ if __name__ == "__main__":
     
     parser.add_argument("-i", "--input_json", dest="input_json", default="person_keypoints_train2017.json",
         help="path to a json file in coco format")
-    parser.add_argument("-o", "--output_json", dest="output_json", default="person_keypoints_train2017_filtered.json",
+    parser.add_argument("-o", "--output_json", dest="output_json", default="person_keypoints_train2017.json",
         help="path to save the output json")
+    parser.add_argument("-s", "--split", dest="split", default="train2017",
+        help="The split of data: train/val")
     parser.add_argument("-c", "--counts", dest="counts", type=int, default=2,
         help="Maximun human counts in a single image, e.g. -c 2 for training data, -c 1 for validation data")
 
