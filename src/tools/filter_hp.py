@@ -48,8 +48,8 @@ class CocoFilter():
         print("Start moving data...")
         for image_info in self.new_images:
             file_name = image_info["file_name"]
-            file_path = self.in_data_path + Path(file_name)
-            file_path_target = self.out_data_path + Path(file_name)
+            file_path = self.in_data_path / Path(file_name)
+            file_path_target = self.out_data_path / Path(file_name)
             shutil.copy(file_path, file_path_target)
         print("Completed moving data.")
 
