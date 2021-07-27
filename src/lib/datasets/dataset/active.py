@@ -54,7 +54,7 @@ class ACTIVE(data.Dataset):
                       [12, 14], [14, 16], [11, 13], [13, 15]]
 
         self.acc_idxs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-        self.data_dir = os.path.join(opt.data_dir, 'active')
+        self.data_dir = os.path.join(opt.data_dir, opt.dataset) # mli: the dir name is specified by `opt.dataset`
         self.img_dir = os.path.join(self.data_dir, '{}'.format(split))
         if split == 'test':
             raise ValueError('No supported for the testing dataset.')

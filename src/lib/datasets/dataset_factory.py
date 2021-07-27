@@ -20,7 +20,8 @@ dataset_factory = {
   'pascal': PascalVOC,
   'kitti': KITTI,
   'coco_hp': COCOHP,
-  'active': ACTIVE
+  'active': ACTIVE,
+  'active_coco': ACTIVE,
 }
 
 _sample_factory = {
