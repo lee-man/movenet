@@ -22,7 +22,7 @@ class Debugger(object):
       self.colors = self.colors.reshape(-1)[::-1].reshape(len(colors), 1, 1, 3)
       self.colors = np.clip(self.colors, 0., 0.6 * 255).astype(np.uint8)
     self.dim_scale = 1
-    if dataset in ['coco_hp', 'coco_hpsp', 'coco_hp_merge']:
+    if dataset in ['coco_hp', 'active', 'coco_active']:
       self.names = ['p']
       self.num_class = 1
       self.num_joints = 17

@@ -7,4 +7,4 @@ python test.py single_pose --exp_id coco_movenet --dataset active --arch movenet
 python test.py single_pose --exp_id coco_movenet --dataset active --arch movenet --keep_res --resume --flip_test
 cd ..
 
-# python demo.py multi_pose --dataset coco_hpsp --arch movenet --demo ../images --load_model ../models/model_best.pth --K 1 --gpus -1 --vis_thresh 0.0
+# python demo.py single_pose --dataset active_coco --arch movenet --demo ../images --load_model ../models/model_last.pth --K 1 --gpus -1 --vis_thresh 0.0
