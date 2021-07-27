@@ -29,7 +29,7 @@ _sample_factory = {
   'ctdet': CTDetDataset,
   'ddd': DddDataset,
   'multi_pose': MultiPoseDataset,
-  'signle_pose': SinglePoseDataset,
+  'single_pose': SinglePoseDataset,
 }
 
 
