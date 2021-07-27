@@ -12,7 +12,8 @@ By default, it will copy the images to `active_coco` directory.
 '''
 
 class CocoFilter():
-    """ Filters the COCO dataset
+    """ 
+    Filters the COCO dataset
     """
     def filter_human_pose(self):
         image_infos = self.coco['images']
@@ -57,10 +58,10 @@ class CocoFilter():
     def main(self, args):
         # Open json
         self.input_json_path = Path('coco', 'annotations', args.input_json)
-        self.output_json_path = Path('active', 'annotations', args.output_json)
+        self.output_json_path = Path('active_coco', 'annotations', args.output_json)
         # data dir
         self.in_data_path = Path('coco', args.split)
-        self.out_data_path = Path('active', args.split)
+        self.out_data_path = Path('active_coco', args.split)
         # self.out_data_pathmkdir(parents=True, exist_ok=True)
         self.counts = args.counts
 
