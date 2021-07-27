@@ -61,7 +61,7 @@ class ACTIVE(data.Dataset):
         else:
             self.annot_path = os.path.join(
                 self.data_dir, 'annotations',
-                'active_{}.json').format(split)
+                '{}_{}.json').format(opt.dataset, split)
         self.max_objs = 2
         self._data_rng = np.random.RandomState(123)
         self._eig_val = np.array([0.2141788, 0.01817699, 0.00341571],
