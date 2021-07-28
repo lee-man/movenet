@@ -5,3 +5,6 @@ python test.py single_pose --exp_id coac_movenet_o --dataset active_coco --arch 
 # flip test
 python test.py single_pose --exp_id coac_movenet_o --dataset active_coco --arch movenet --keep_res --resume --flip_test
 cd ..
+
+# demo
+# python demo.py single_pose --dataset active_coco --arch movenet --demo ../images --load_model ../models/single_pose_movenet.pth --K 1 --gpus -1 --vis_thresh 0.0 --not_reg_offset

@@ -656,6 +656,13 @@ def single_pose_decode(
         heat, wh, kps, reg=None, hm_hp=None, hp_offset=None, K=1):
     '''
       This function tries to reproduce the post-processing of MoveNet (https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html)
+      Args:
+        `heat`: the heatmap of human center point, with shape of (batch, 1, height, width)
+        `wh`: the regression of width, height offsets from center point, with shape of (batch, 2, height, width)
+        `kps`: the joint offsets from the center point, with shape of (batch, 17*2, height, width).
+        `reg`: the center point offset, with shape of (batch, 2, height, width).
+        `hm_hp`: the heatmap of joints, with shape of (batch, 17, height, width).
+        `hp_offset`: the joint offsets from the regressed joint points, with shape of (batch, 2, height, width).
     '''
     batch, cat, height, width = heat.size()
     num_joints = kps.shape[1] // 2
