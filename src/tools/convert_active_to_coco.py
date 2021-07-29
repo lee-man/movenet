@@ -102,7 +102,7 @@ category = {"supercategory": "person","id": 1,"name": "person","keypoints": ["no
 coco_train['categories'] = [category]
 
 with open(train_save_path, 'w') as f:
-    json.dump(coco, f)
+    json.dump(coco_train, f)
 
 coco_val = {'images': [], 'categories': [], 'annotations': []}
 
@@ -154,4 +154,4 @@ category = {"supercategory": "person","id": 1,"name": "person","keypoints": ["no
 coco_val['categories'] = [category]
 
 with open(val_save_path, 'w') as f:
-    json.dump(coco, f)
+    json.dump(coco_val, f)
