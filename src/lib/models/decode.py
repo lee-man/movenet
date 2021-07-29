@@ -129,7 +129,7 @@ def _topk_channel_with_reg_kps(scores, reg_kps, K=40, delta=1.0, multipiler=5.0)
     x = np.repeat(np.expand_dims(x, axis=0), cat, axis=0)
     y = y - joint_y.reshape((cat, 1, -1)).numpy()
     x = x - joint_x.reshape((cat, 1, -1)).numpy()
-    weight_to_joints = torch.from_numpy(multipiler / (np.sqrt(x * x + y * y) + delta))
+    weight_to_joints = torch.from_numpy(multipiler / (np.sqrt(x * x + y * y) + delta)).to(scores.device)
     weight_to_joints = weight_to_joints.reshape((scores.size()))
 
     scores *= weight_to_joints
@@ -174,7 +174,7 @@ def _topk_with_center(scores, K=40, delta=1.0, multipiler=1.0):
     y = y - center_y
     x = x - center_x
     weight_to_center = multipiler / (np.sqrt(x * x + y * y) + delta)
-    weight_to_center = torch.from_numpy(weight_to_center)
+    weight_to_center = torch.from_numpy(weight_to_center).to(scores.device)
 
     weight_to_center = weight_to_center.reshape(1, 1, height, width)
     scores *= weight_to_center
