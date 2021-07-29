@@ -54,12 +54,12 @@ print("val size: ", img_num -int(img_num * train_percentage))
 aid = 0
 coco_train = {'images': [], 'categories': [], 'annotations': []}
 
-for img_id in range(train_index):
+for img_id in train_index:
     
     filename = 'images/' + str(active[img_id]['image'])#filename
     filename_target = 'train/' + str(active[img_id]['image'])
     shutil.copy(filename, filename_target)
-    img = Image.open(osp.join('..', filename))
+    img = Image.open(osp.join('.', filename))
     w,h = img.size
     img_dict = {'id': aid, 'file_name': str(active[img_id]['image']), 'width': w, 'height': h}
     coco_train['images'].append(img_dict)
@@ -106,7 +106,7 @@ with open(train_save_path, 'w') as f:
 
 coco_val = {'images': [], 'categories': [], 'annotations': []}
 
-for img_id in range(train_index):
+for img_id in val_index:
     
     filename = 'images/' + str(active[img_id]['image'])#filename
     filename_target = 'train/' + str(active[img_id]['image'])
