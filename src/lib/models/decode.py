@@ -127,8 +127,8 @@ def _topk_channel_with_reg_kps(scores, reg_kps, K=40, delta=1.0, multipiler=5.0)
     y, x = np.ogrid[0:height, 0:width]
     y = np.repeat(np.expand_dims(y, axis=0), cat, axis=0)
     x = np.repeat(np.expand_dims(x, axis=0), cat, axis=0)
-    y = y - joint_y.reshape((cat, 1, -1)).numpy()
-    x = x - joint_x.reshape((cat, 1, -1)).numpy()
+    y = y - joint_y.reshape((cat, 1, -1)).cpu().numpy()
+    x = x - joint_x.reshape((cat, 1, -1)).cpu().numpy()
     weight_to_joints = torch.from_numpy(multipiler / (np.sqrt(x * x + y * y) + delta)).to(scores.device)
     weight_to_joints = weight_to_joints.reshape((scores.size()))
 
