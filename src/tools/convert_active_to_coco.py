@@ -42,7 +42,8 @@ COCO_PERSON_KEYPOINT_NAMES = [
 joint_mapping = {'0': 16, '1': 14, '2': 12, '3': 11, '4': 13, '5': 15, '6': -1, '7': -1, '8': -1, '9': 0, '10': 10, '11': 8, '12': 6, '13': 5, '14': 7, '15': 9}
 joint_num = 17
 img_num = len(active)
-random_index = random.shuffle(list(range(img_num)))
+random_index = list(range(img_num))
+random.shuffle(random_index)
 train_index = random_index[:int(img_num * train_percentage) + 1]
 val_index = random_index[int(img_num * train_percentage) + 1:]
 
