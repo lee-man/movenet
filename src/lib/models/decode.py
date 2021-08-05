@@ -702,7 +702,6 @@ def single_pose_decode(
         kps = kps.view(batch, K, num_joints, 2).permute(
             0, 2, 1, 3).contiguous()  # b x J x K x 2
         reg_kps = kps.unsqueeze(3).expand(batch, num_joints, K, K, 2)
-        # print('reg_kps size: ', reg_kps.size())
         # hm_score, hm_inds, hm_ys, hm_xs = _topk_channel(
         #     hm_hp, K=K)  # b x J x K
         hm_score, hm_inds, hm_ys, hm_xs = _topk_channel_with_reg_kps(hm_hp, reg_kps, K=K) # b x J x K
