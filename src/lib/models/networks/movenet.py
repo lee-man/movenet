@@ -49,7 +49,7 @@ class MoveNet(nn.Module):
     '''
     def __init__(self, backbone, heads, head_conv):
         super(MoveNet, self).__init__()
-        self.out_channels = 256
+        self.out_channels = 24
         self.backbone = backbone
         self.heads = heads
 
@@ -57,8 +57,8 @@ class MoveNet(nn.Module):
             classes = self.heads[head]
             if head_conv > 0:
                 fc = nn.Sequential(
-                  nn.Conv2d(self.out_channels, head_conv,
-                    kernel_size=3, padding=1, bias=True),
+                  nn.Conv2d(self.out_channels, self.out_channels, 3, padding=1, groups=self.out_channels, bias=True),
+                  nn.Conv2d(self.out_channels, head_conv, 1, 1, 0, bias=True),
                   nn.ReLU(inplace=True),
                   nn.Conv2d(head_conv, classes, 
                     kernel_size=1, stride=1, 
@@ -78,7 +78,7 @@ class MoveNet(nn.Module):
             self.__setattr__(head, fc)
 
     def forward(self, x):
-        x = self.backbone(x)['0']
+        x = self.backbone(x)
         ret = {}
         for head in self.heads:
             ret[head] = self.__getattr__(head)(x)

@@ -1,13 +1,17 @@
 import warnings
 import torch
 from torch import nn
-from torchvision.ops.feature_pyramid_network import FeaturePyramidNetwork, LastLevelMaxPool
+# from torchvision.ops.feature_pyramid_network import FeaturePyramidNetwork, LastLevelMaxPool
+from .feature_pyramid_network import FeaturePyramidNetwork, LastLevelMaxPool
+
 
 from torchvision.ops import misc as misc_nn_ops
 from torchvision.models._utils import IntermediateLayerGetter
 # from torchvision.models import mobilenet
 from .mobilenetv2 import mobilenet_v2
 from torchvision.models import resnet
+
+# test using onnx
 
 
 class BackboneWithFPN(nn.Module):
@@ -37,7 +41,8 @@ class BackboneWithFPN(nn.Module):
         self.body = IntermediateLayerGetter(backbone, return_layers=return_layers)
         self.fpn = FeaturePyramidNetwork(
             in_channels_list=in_channels_list,
-            out_channels=out_channels,
+            out_channels_list=[24, 32, 64, 64],
+            fused_channels_list=[24, 24, 32],
             extra_blocks=extra_blocks,
         )
         self.out_channels = out_channels
@@ -149,9 +154,11 @@ def mobilenet_backbone(
 
     # Gather the indices of blocks which are strided. These are the locations of C1, ..., Cn-1 blocks.
     # The first and last blocks are always included because they are the C0 (conv1) and Cn.
+    # mli: for mobilenet, the obtained stage_indices = [0, 2, 4, 7, 14, 18]
     # stage_indices = [0] + [i for i, b in enumerate(backbone) if getattr(b, "_is_cn", False)] + [len(backbone) - 1]
     # mli: the following block indices refer to the last layer of each stage (s4, s8, s16, s32)
-    stage_indices = [2, 4, 7, 14]
+    # **This is wrong** stage_indices = [2, 4, 7, 14]
+    stage_indices = [3, 6, 10, 18]
     num_stages = len(stage_indices)
     # print("# stages: ", num_stages)
     # print("Stage indicse: ", stage_indices)
@@ -165,7 +172,7 @@ def mobilenet_backbone(
     #     for parameter in b.parameters():
     #         parameter.requires_grad_(False)
 
-    out_channels = 256
+    out_channels = 24
     if fpn:
         # mli: remove the extra_blocks
         # if extra_blocks is None:
@@ -178,6 +185,8 @@ def mobilenet_backbone(
         # print("Return layers: ", return_layers)
 
         in_channels_list = [backbone[stage_indices[i]].out_channels for i in returned_layers]
+        print("in_channels_list", in_channels_list)
+
         return BackboneWithFPN(backbone, return_layers, in_channels_list, out_channels, extra_blocks=extra_blocks)
     else:
         m = nn.Sequential(
@@ -210,10 +219,9 @@ if __name__=='__main__':
         >>>    ('3', torch.Size([1, 256, 2, 2])),
         >>>    ('pool', torch.Size([1, 256, 1, 1]))]
     """
-    backbone = mobilenet_backbone('mobilenet_v2', fpn=True, pretrained=True, trainable_layers=3)
+    backbone = mobilenet_backbone('mobilenet_v2', fpn=True, pretrained=False, trainable_layers=3)
     x = torch.rand(1,3,192,192)
     # compute the output
     output = backbone(x)
-    print([(k, v.shape) for k, v in output.items()])
+    print('output shape: ', output.shape)
 '''
-    
