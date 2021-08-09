@@ -185,7 +185,7 @@ def mobilenet_backbone(
         # print("Return layers: ", return_layers)
 
         in_channels_list = [backbone[stage_indices[i]].out_channels for i in returned_layers]
-        print("in_channels_list", in_channels_list)
+        # print("in_channels_list", in_channels_list)
 
         return BackboneWithFPN(backbone, return_layers, in_channels_list, out_channels, extra_blocks=extra_blocks)
     else:
