@@ -48,7 +48,7 @@ class ConvBNActivation(nn.Sequential):
             activation_layer = nn.ReLU6
         super().__init__(
             nn.Conv2d(in_planes, out_planes, kernel_size, stride, padding, dilation=dilation, groups=groups,
-                      bias=False),
+                      bias=True),
             norm_layer(out_planes),
             activation_layer(inplace=True)
         )
@@ -86,7 +86,7 @@ class InvertedResidual(nn.Module):
             # dw
             ConvBNReLU(hidden_dim, hidden_dim, stride=stride, groups=hidden_dim, norm_layer=norm_layer),
             # pw-linear
-            nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
+            nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=True),
             norm_layer(oup),
         ])
         self.conv = nn.Sequential(*layers)
