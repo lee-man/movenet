@@ -70,10 +70,10 @@ class SinglePoseDataset(data.Dataset):
     inp = cv2.warpAffine(img, trans_input, 
                          (self.opt.input_res, self.opt.input_res),
                          flags=cv2.INTER_LINEAR)
-    inp = (inp.astype(np.float32) / 255.)
+    inp = (inp.astype(np.float32) * 0.007843137718737125 - 1.0)
     if self.split == 'train' and not self.opt.no_color_aug:
       color_aug(self._data_rng, inp, self._eig_val, self._eig_vec)
-    inp = (inp - self.mean) / self.std
+    # inp = (inp - self.mean) / self.std
     inp = inp.transpose(2, 0, 1)
 
     output_res = self.opt.output_res
