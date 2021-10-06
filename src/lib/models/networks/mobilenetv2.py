@@ -41,17 +41,26 @@ class ConvBNActivation(nn.Sequential):
         activation_layer: Optional[Callable[..., nn.Module]] = None,
         dilation: int = 1,
     ) -> None:
-        padding = (kernel_size - 1) // 2 * dilation
-        if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
+        padding = ((stride - 1) + dilation * (kernel_size - 1)) // 2
+        # if norm_layer is None:
+        #     norm_layer = nn.BatchNorm2d
         if activation_layer is None:
             activation_layer = nn.ReLU6
-        super().__init__(
-            nn.Conv2d(in_planes, out_planes, kernel_size, stride, padding, dilation=dilation, groups=groups,
-                      bias=False),
-            norm_layer(out_planes),
+        if stride == 2 and kernel_size == 3:
+            super().__init__(
+            nn.ZeroPad2d((0, 1, 0, 1)),
+            nn.Conv2d(in_planes, out_planes, kernel_size, stride, 0, dilation=dilation, groups=groups,
+                      bias=True),
+            # norm_layer(out_planes),
             activation_layer(inplace=True)
         )
+        else:
+            super().__init__(
+                nn.Conv2d(in_planes, out_planes, kernel_size, stride, padding, dilation=dilation, groups=groups,
+                        bias=True),
+                # norm_layer(out_planes),
+                activation_layer(inplace=True)
+            )
         self.out_channels = out_planes
 
 
@@ -82,12 +91,13 @@ class InvertedResidual(nn.Module):
         if expand_ratio != 1:
             # pw
             layers.append(ConvBNReLU(inp, hidden_dim, kernel_size=1, norm_layer=norm_layer))
+        
         layers.extend([
             # dw
             ConvBNReLU(hidden_dim, hidden_dim, stride=stride, groups=hidden_dim, norm_layer=norm_layer),
             # pw-linear
-            nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
-            norm_layer(oup),
+            nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=True),
+            # norm_layer(oup),
         ])
         self.conv = nn.Sequential(*layers)
         self.out_channels = oup

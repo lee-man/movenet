@@ -345,7 +345,7 @@ class opts(object):
             if opt.hm_hp:
                 opt.heads.update({'hm_hp': 17})
             if opt.reg_hp_offset:
-                opt.heads.update({'hp_offset': 2}) # TODO: change to 34
+                opt.heads.update({'hp_offset': 34}) # TODO: change to 34
         else:
             assert 0, 'task not defined!'
         print('heads', opt.heads)
