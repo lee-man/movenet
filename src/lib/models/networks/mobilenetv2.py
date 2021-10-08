@@ -87,7 +87,7 @@ class InvertedResidual(nn.Module):
             ConvBNReLU(hidden_dim, hidden_dim, stride=stride, groups=hidden_dim, norm_layer=norm_layer),
             # pw-linear
             nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=True),
-            norm_layer(oup),
+            # norm_layer(oup),
         ])
         self.conv = nn.Sequential(*layers)
         self.out_channels = oup

@@ -90,6 +90,6 @@ class MoveNet(nn.Module):
 
 def get_pose_net(num_layers, heads, head_conv=256):
     assert num_layers == 0
-    backbone = mobilenet_backbone('mobilenet_v2', pretrained=True, fpn=True, trainable_layers=0)
+    backbone = mobilenet_backbone('mobilenet_v2', pretrained=False, fpn=True, trainable_layers=0)
     model = MoveNet(backbone, heads, head_conv=head_conv)
     return model
