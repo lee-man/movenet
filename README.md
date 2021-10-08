@@ -3,17 +3,13 @@ Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-
 
 I will add documents about how to run the program and specify the modification I made.
 
-## Major differences
-1. The prediction heads under the default setting of CenterNet (as well as COCO keypoint detection task) is to estimate the bounding box and joint positions at the same time. Thus, the losses include (width, weight) regression loss and center point offset loss. The impact of these two losses can be elimintated via specifying options `--eval_oracle_offset` and `--eval_oracle_wh`. I haven't used this setting, and will report the results later.
-2. The channel size of joint local offsets is 2*k (34 for COCO), while the channel size of current implementation is 2, as the feature map is shared across different keypoints in CenterNet.
-3. In CenterNet, authors use pre-trained object detection model as the initial model. Here, I just use the pre-trained MobileNet v2 from ImageNet classification task, as I haven't found any available pre-trained MobileNet_v2 + FPN.
-4. ~~The keypoint decoding processing is quite different from MoveNet. I will modify this part as soon as possible.~~
+## Dev branch
+Finetune the MoveNet (extracted from TFLite file, see [lee-man/movenet-pytorch](https://github.com/lee-man/movenet-pytorch) for more details) on customized dataset.
 
-## TODO
-1. Create a standalone `SinglePoseDetector/Trainer` class for MoveNet.
-2. Release the COCO object detection pre-trained model based on MoveNet.
-3. Add ONNX convertion script, and release [MoveNet-based Android prototype](https://github.com/tensorflow/examples/tree/master/lite/examples/pose_estimation/android) based on Tensorflow Lite.
-4. Use [netron](https://github.com/lutzroeder/netron/) to validate the network architecture.
+## Run training code
+
+## Run evaluation code
+
 
 Below is the original README from CenterNet. It's ane excellent work and I realy like it.
 
