@@ -1,6 +1,8 @@
 # MoveNet
 Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html) from Google. This repo is heavily borrowed from [CenterNet](https://github.com/xingyizhou/CenterNet) and [TorchVision](https://github.com/pytorch/pytorch).
 
+See my another repo [lee-man/movenet-pytorch](https://github.com/lee-man/movenet-pytorch) for inference only.
+
 ## Update
 I remove the redundant code for other dataset and tasks, simplify this codebase, and make it support the fine-tuning MoveNet on the customized dataset (named Active here).
 
