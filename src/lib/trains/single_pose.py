@@ -24,8 +24,7 @@ class SinglePoseLoss(torch.nn.Module):
         super(SinglePoseLoss, self).__init__()
         self.crit = FocalLoss()
         self.crit_hm_hp = torch.nn.MSELoss() if opt.mse_loss else FocalLoss()
-        self.crit_kp = RegWeightedL1Loss() if not opt.dense_hp else \
-            torch.nn.L1Loss(reduction='sum')
+        self.crit_kp = RegWeightedL1Loss() #if not opt.dense_hp else torch.nn.L1Loss(reduction='sum')
         self.crit_reg = RegL1Loss() if opt.reg_loss == 'l1' else \
             RegLoss() if opt.reg_loss == 'sl1' else None
         self.opt = opt
