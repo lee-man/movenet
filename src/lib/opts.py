@@ -62,7 +62,7 @@ class opts(object):
         self.parser.add_argument('--arch', default='movenet',
                                  help='model architecture. Currently tested'
                                       'movenet')
-        self.parser.add_argument('--froze-backbone', default=True, action='store_false',
+        self.parser.add_argument('--froze_backbone', default=True, action='store_false',
                                  help='whether froze the backbone during training')
         self.parser.add_argument('--head_conv', type=int, default=-1,
                                  help='conv layer channels for output head'
@@ -241,8 +241,8 @@ class opts(object):
 
         opt.fix_res = not opt.keep_res
         print('Fix size testing.' if opt.fix_res else 'Keep resolution testing.')
-        opt.reg_offset = not opt.not_reg_offset
-        opt.reg_bbox = not opt.not_reg_bbox
+        # opt.reg_offset = not opt.not_reg_offset
+        # opt.reg_bbox = not opt.not_reg_bbox
         opt.hm_hp = not opt.not_hm_hp
         opt.reg_hp_offset = (not opt.not_reg_hp_offset) and opt.hm_hp
 
