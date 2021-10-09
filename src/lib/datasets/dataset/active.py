@@ -37,10 +37,10 @@ class ACTIVE(data.Dataset):
     """
     num_classes = 1
     num_joints = 17
-    default_resolution = [512, 512]
-    mean = np.array([0.40789654, 0.44719302, 0.47026115],
+    default_resolution = [192, 192] # mli: for movenet-lightning
+    mean = np.array([0.5, 0.5, 0.5],
                     dtype=np.float32).reshape(1, 1, 3)
-    std = np.array([0.28863828, 0.27408164, 0.27809835],
+    std = np.array([1., 1., 1.],
                    dtype=np.float32).reshape(1, 1, 3)
     flip_idx = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
                 [11, 12], [13, 14], [15, 16]]
@@ -62,7 +62,7 @@ class ACTIVE(data.Dataset):
             self.annot_path = os.path.join(
                 self.data_dir, 'annotations',
                 '{}_{}.json').format(opt.dataset, split)
-        self.max_objs = 2
+        self.max_objs = 2 # mli: only consider the images with less than 2 human objects
         self._data_rng = np.random.RandomState(123)
         self._eig_val = np.array([0.2141788, 0.01817699, 0.00341571],
                                  dtype=np.float32)

@@ -186,8 +186,8 @@ class opts(object):
         #                               'just apply regression on center point.')
         # self.parser.add_argument('--cat_spec_wh', action='store_true',
         #                          help='category specific bounding box size.')
-        self.parser.add_argument('--not_reg_offset', action='store_true',
-                                 help='not regress local offset.')
+        # self.parser.add_argument('--not_reg_offset', action='store_true',
+                                #  help='not regress local offset.')
         # # exdet
         # self.parser.add_argument('--agnostic_ex', action='store_true',
         #                          help='use category agnostic extreme points.')
@@ -198,33 +198,33 @@ class opts(object):
         # self.parser.add_argument('--aggr_weight', type=float, default=0.0,
         #                          help='edge aggregation weight.')
         # multi_pose
-        self.parser.add_argument('--dense_hp', action='store_true',
-                                 help='apply weighted pose regression near center '
-                                      'or just apply regression on center point.')
-        self.parser.add_argument('--not_hm_hp', action='store_true',
-                                 help='not estimate human joint heatmap, '
-                                      'directly use the joint offset from center.')
-        self.parser.add_argument('--not_reg_hp_offset', action='store_true',
-                                 help='not regress local offset for '
-                                      'human joint heatmaps.')
-        self.parser.add_argument('--not_reg_bbox', action='store_true',
-                                 help='not regression bounding box size.')
+        # self.parser.add_argument('--dense_hp', action='store_true',
+        #                          help='apply weighted pose regression near center '
+        #                               'or just apply regression on center point.')
+        # self.parser.add_argument('--not_hm_hp', action='store_true',
+        #                          help='not estimate human joint heatmap, '
+        #                               'directly use the joint offset from center.')
+        # self.parser.add_argument('--not_reg_hp_offset', action='store_true',
+        #                          help='not regress local offset for '
+        #                               'human joint heatmaps.')
+        # self.parser.add_argument('--not_reg_bbox', action='store_true',
+        #                          help='not regression bounding box size.')
 
         # ground truth validation
-        self.parser.add_argument('--eval_oracle_hm', action='store_true',
-                                 help='use ground center heatmap.')
-        self.parser.add_argument('--eval_oracle_wh', action='store_true',
-                                 help='use ground truth bounding box size.')
-        self.parser.add_argument('--eval_oracle_offset', action='store_true',
-                                 help='use ground truth local heatmap offset.')
-        self.parser.add_argument('--eval_oracle_kps', action='store_true',
-                                 help='use ground truth human pose offset.')
-        self.parser.add_argument('--eval_oracle_hmhp', action='store_true',
-                                 help='use ground truth human joint heatmaps.')
-        self.parser.add_argument('--eval_oracle_hp_offset', action='store_true',
-                                 help='use ground truth human joint local offset.')
-        self.parser.add_argument('--eval_oracle_dep', action='store_true',
-                                 help='use ground truth depth.')
+        # self.parser.add_argument('--eval_oracle_hm', action='store_true',
+        #                          help='use ground center heatmap.')
+        # self.parser.add_argument('--eval_oracle_wh', action='store_true',
+        #                          help='use ground truth bounding box size.')
+        # self.parser.add_argument('--eval_oracle_offset', action='store_true',
+        #                          help='use ground truth local heatmap offset.')
+        # self.parser.add_argument('--eval_oracle_kps', action='store_true',
+        #                          help='use ground truth human pose offset.')
+        # self.parser.add_argument('--eval_oracle_hmhp', action='store_true',
+        #                          help='use ground truth human joint heatmaps.')
+        # self.parser.add_argument('--eval_oracle_hp_offset', action='store_true',
+        #                          help='use ground truth human joint local offset.')
+        # self.parser.add_argument('--eval_oracle_dep', action='store_true',
+        #                          help='use ground truth depth.')
 
     def parse(self, args=''):
         if args == '':
@@ -241,10 +241,10 @@ class opts(object):
 
         opt.fix_res = not opt.keep_res
         print('Fix size testing.' if opt.fix_res else 'Keep resolution testing.')
-        opt.reg_offset = not opt.not_reg_offset
+        # opt.reg_offset = not opt.not_reg_offset
         # opt.reg_bbox = not opt.not_reg_bbox
-        opt.hm_hp = not opt.not_hm_hp
-        opt.reg_hp_offset = (not opt.not_reg_hp_offset) and opt.hm_hp
+        # opt.hm_hp = not opt.not_hm_hp
+        # opt.reg_hp_offset = (not opt.not_reg_hp_offset) and opt.hm_hp
 
         if opt.head_conv == -1:  # init default head_conv
             if 'dla' in opt.arch:
@@ -331,20 +331,20 @@ class opts(object):
             # assert opt.dataset in ['coco_hp']
             opt.flip_idx = dataset.flip_idx
             opt.heads = {'hm': opt.num_classes, 'wh': 2, 'hps': 34}
-            if opt.reg_offset:
-                opt.heads.update({'reg': 2})
-            if opt.hm_hp:
-                opt.heads.update({'hm_hp': 17})
-            if opt.reg_hp_offset:
-                opt.heads.update({'hp_offset': 2})
+            # if opt.reg_offset:
+            opt.heads.update({'reg': 2})
+            # if opt.hm_hp:
+            opt.heads.update({'hm_hp': 17})
+            # if opt.reg_hp_offset:
+            opt.heads.update({'hp_offset': 2})
         elif opt.task == "single_pose":
             # assert opt.dataset in ['coco_hp']
             opt.flip_idx = dataset.flip_idx
-            opt.heads = {'hm': opt.num_classes, 'hps': 34}
-            if opt.hm_hp:
-                opt.heads.update({'hm_hp': 17})
-            if opt.reg_hp_offset:
-                opt.heads.update({'hp_offset': 34}) # TODO: change to 34
+            opt.heads = {'hm': opt.num_classes, 'hps': 34, 'hm_hp': 17, 'hp_offset': 34}
+            # if opt.hm_hp:
+            #     opt.heads.update({'hm_hp': 17})
+            # if opt.reg_hp_offset:
+            #     opt.heads.update({'hp_offset': 34}) # TODO: change to 34
         else:
             assert 0, 'task not defined!'
         print('heads', opt.heads)

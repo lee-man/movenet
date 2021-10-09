@@ -98,6 +98,31 @@ class MoveNet(nn.Module):
 
         return [ret]
 
+    def inference(self, x):
+        # conv forward
+        x  = x * 0.007843137718737125 - 1.0
+        x = self.backbone(x)
+        ret = {}
+        for head in self.heads:
+            ret[head] = self.__getattr__(head)(x)
+
+        x = ret
+
+        kpt_heatmap, center, kpt_regress, kpt_offset = x['hm_hp'].squeeze(0).permute((1, 2, 0)), x['hm'].squeeze(0).permute((1, 2, 0)), x['hps'].squeeze(0).permute((1, 2, 0)), x['hp_offset'].squeeze(0).permute((1, 2, 0))
+
+        # pose decode
+        kpt_heatmap = torch.sigmoid(kpt_heatmap)
+        center = torch.sigmoid(center)
+
+        ct_y, ct_x = self._top_with_center(center, self.ft_size)
+        ct_y, ct_x = ct_y.squeeze(0).type(torch.LongTensor), ct_x.squeeze(0).type(torch.LongTensor)
+        kpt_ys_regress, kpt_xs_regress = self._center_to_kpt(kpt_regress, ct_y, ct_x)
+        kpt_ys_heatmap, kpt_xs_heatmap = self._kpt_from_heatmap(kpt_heatmap, kpt_ys_regress, kpt_xs_regress, self.ft_size)
+
+        kpt_with_conf = self._kpt_from_offset(kpt_offset, kpt_ys_heatmap, kpt_xs_heatmap, kpt_heatmap, self.ft_size)
+        
+        return kpt_with_conf
+
         
     def _draw(self, ft):
         plt.imshow(ft.numpy().reshape(self.ft_size, self.ft_size))

@@ -2,10 +2,7 @@
 Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html) from Google. This repo is heavily borrowed from [CenterNet](https://github.com/xingyizhou/CenterNet) and [TorchVision](https://github.com/pytorch/pytorch).
 
 ## Update
-**IMPORTANT:** I will simplify this codebase and make it support the fine-tuning MoveNet on the customized dataset.
-
-## Dev branch
-Finetune the MoveNet extracted from TFLite file(see [lee-man/movenet-pytorch](https://github.com/lee-man/movenet-pytorch) for more details) on customized dataset.
+**IMPORTANT:** I will simplify this codebase, and make it support the fine-tuning MoveNet on the customized dataset.
 
 ## Run training code
 ```bash

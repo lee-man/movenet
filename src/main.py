@@ -37,7 +37,6 @@ def main(opt):
         model, optimizer, start_epoch = load_model(
             model, opt.load_model, optimizer, opt.resume, opt.lr, opt.lr_step)
 
-    exit()
 
     Trainer = train_factory[opt.task]
     trainer = Trainer(opt, model, optimizer)
@@ -65,7 +64,7 @@ def main(opt):
         pin_memory=True,
         drop_last=True
     )
-
+    exit()
     print('Starting training...')
     best = 1e10
     for epoch in range(start_epoch + 1, opt.num_epochs + 1):
