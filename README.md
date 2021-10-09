@@ -4,10 +4,13 @@ Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-
 I will add documents about how to run the program and specify the modification I made.
 
 ## Dev branch
-Finetune the MoveNet (extracted from TFLite file, see [lee-man/movenet-pytorch](https://github.com/lee-man/movenet-pytorch) for more details) on customized dataset.
+Finetune the MoveNet extracted from TFLite file(see [lee-man/movenet-pytorch](https://github.com/lee-man/movenet-pytorch) for more details) on customized dataset.
 
 ## Run training code
-
+```bash
+cd src
+python main.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --batch_size 24 --master_batch 4 --lr 5e-4 --gpus 0,1,2,3 --num_epochs 250 --lr_step 120,150,180,200,230  --num_workers 16 --eval_oracle_offset --eval_oracle_wh --load_model ../models/movenet.pth
+```
 ## Run evaluation code
 
 

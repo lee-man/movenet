@@ -87,14 +87,6 @@ class MoveNet(nn.Module):
                 #     fill_fc_weights(fc)
             self.__setattr__(head, fc)
 
-    # def forward(self, x):
-    #     x  = x * 0.007843137718737125 - 1.0
-    #     x = self.backbone(x)
-    #     ret = {}
-    #     for head in self.heads:
-    #         ret[head] = self.__getattr__(head)(x)
-    #     return [ret]
-
 
     def forward(self, x):
         # conv forward
@@ -107,80 +99,82 @@ class MoveNet(nn.Module):
         return [ret]
 
         
-    # def _draw(self, ft):
-    #     plt.imshow(ft.numpy().reshape(self.ft_size, self.ft_size))
-    #     # img = (data-np.min(data))/(np.max(data)-np.min(data))*255
-    #     plt.show()
+    def _draw(self, ft):
+        plt.imshow(ft.numpy().reshape(self.ft_size, self.ft_size))
+        # img = (data-np.min(data))/(np.max(data)-np.min(data))*255
+        plt.show()
 
-    # def _generate_center_dist(self, ft_size=48, delta=1.8):
-    #     weight_to_center = torch.zeros((int(ft_size), int(ft_size)))
-    #     y, x = np.ogrid[0:ft_size, 0:ft_size]
-    #     center_y, center_x = ft_size / 2.0, ft_size/ 2.0
-    #     y = y - center_y
-    #     x = x - center_x
-    #     # weight_to_center = 1 / (np.sqrt(np.abs(x) + np.abs(y)) + delta)
-    #     weight_to_center = 1 / (np.sqrt(y * y + x * x) + delta)
-    #     weight_to_center = torch.from_numpy(weight_to_center)
-    #     return weight_to_center
+    def _generate_center_dist(self, ft_size=48, delta=1.8):
+        weight_to_center = torch.zeros((int(ft_size), int(ft_size)))
+        y, x = np.ogrid[0:ft_size, 0:ft_size]
+        center_y, center_x = ft_size / 2.0, ft_size/ 2.0
+        y = y - center_y
+        x = x - center_x
+        # weight_to_center = 1 / (np.sqrt(np.abs(x) + np.abs(y)) + delta)
+        weight_to_center = 1 / (np.sqrt(y * y + x * x) + delta)
+        weight_to_center = torch.from_numpy(weight_to_center)
+        return weight_to_center
 
-    # def _generate_dist_map(self, ft_size=48):
-    #     y, x = np.ogrid[0:ft_size, 0:ft_size]
-    #     y = torch.from_numpy(np.repeat(y, ft_size, axis=1)).unsqueeze(2).float()
-    #     x = torch.from_numpy(np.repeat(x, ft_size, axis=0)).unsqueeze(2).float()
+    def _generate_dist_map(self, ft_size=48):
+        y, x = np.ogrid[0:ft_size, 0:ft_size]
+        y = torch.from_numpy(np.repeat(y, ft_size, axis=1)).unsqueeze(2).float()
+        x = torch.from_numpy(np.repeat(x, ft_size, axis=0)).unsqueeze(2).float()
 
-    #     return y, x
+        return y, x
 
 
-    # def _top_with_center(self, center, size=48):
-    #     scores = center * self.weight_to_center
+    def _top_with_center(self, center, size=48):
+        scores = center * self.weight_to_center
 
-    #     top_indx = torch.argmax(scores.view(1, 48 * 48, 1), dim=1)
-    #     # top_y = torch.div(top_indx, size, rounding_mode='floor')
-    #     top_y = (top_indx / size).int().float()
-    #     top_x = top_indx - top_y * size
+        top_indx = torch.argmax(scores.view(1, 48 * 48, 1), dim=1)
+        # top_y = torch.div(top_indx, size, rounding_mode='floor')
+        top_y = (top_indx / size).int().float()
+        top_x = top_indx - top_y * size
 
-    #     return top_y, top_x
+        return top_y, top_x
 
-    # def _center_to_kpt(self, kpt_regress, ct_y, ct_x):
-    #     kpt_coor = kpt_regress[ct_y, ct_x, :] #.squeeze(0)
-    #     # kpt_coor = kpt_coor.reshape((17, 2))
-    #     ys, xs = kpt_coor[0, :17] + ct_y.float(), kpt_coor[0, 17:] + ct_x.float()
+    def _center_to_kpt(self, kpt_regress, ct_y, ct_x):
+        kpt_coor = kpt_regress[ct_y, ct_x, :] #.squeeze(0)
+        # kpt_coor = kpt_coor.reshape((17, 2))
+        ys, xs = kpt_coor[0, :17] + ct_y.float(), kpt_coor[0, 17:] + ct_x.float()
         
-    #     return (ys, xs)
+        return (ys, xs)
 
-    # def _kpt_from_heatmap(self, kpt_heatmap, kpt_ys, kpt_xs, size=48):
-    #     y = self.dist_y - kpt_ys.reshape(1, 1, 17)
-    #     x = self.dist_x - kpt_xs.reshape(1, 1, 17)
-    #     dist_weight = torch.sqrt(y * y + x * x) + 1.8
+    def _kpt_from_heatmap(self, kpt_heatmap, kpt_ys, kpt_xs, size=48):
+        y = self.dist_y - kpt_ys.reshape(1, 1, 17)
+        x = self.dist_x - kpt_xs.reshape(1, 1, 17)
+        dist_weight = torch.sqrt(y * y + x * x) + 1.8
         
-    #     scores = kpt_heatmap / dist_weight
-    #     scores = scores.reshape((1, 48 * 48, 17))
-    #     top_inds = torch.argmax(scores, dim=1)
-    #     # kpts_ys = torch.div(top_inds, size, rounding_mode='floor')
-    #     kpts_ys = (top_inds / size).int().float()
-    #     kpts_xs = top_inds - kpts_ys * size
-    #     return kpts_ys, kpts_xs
+        scores = kpt_heatmap / dist_weight
+        scores = scores.reshape((1, 48 * 48, 17))
+        top_inds = torch.argmax(scores, dim=1)
+        # kpts_ys = torch.div(top_inds, size, rounding_mode='floor')
+        kpts_ys = (top_inds / size).int().float()
+        kpts_xs = top_inds - kpts_ys * size
+        return kpts_ys, kpts_xs
     
-    # def _kpt_from_offset(self, kpt_offset, kpts_ys, kpts_xs, kpt_heatmap, size=48):
-    #     kpt_offset = kpt_offset.reshape(size, size, 17, 2)
-    #     kpt_coordinate = torch.stack([kpts_ys.squeeze(0), kpts_xs.squeeze(0)], dim=1)
+    def _kpt_from_offset(self, kpt_offset, kpts_ys, kpts_xs, kpt_heatmap, size=48):
+        kpt_offset = kpt_offset.reshape(size, size, 17, 2)
+        kpt_coordinate = torch.stack([kpts_ys.squeeze(0), kpts_xs.squeeze(0)], dim=1)
 
-    #     kpt_offset_yx = torch.zeros((17, 2))
-    #     kpt_conf = torch.zeros((17, 1))
+        kpt_offset_yx = torch.zeros((17, 2))
+        kpt_conf = torch.zeros((17, 1))
 
-    #     kpt_offset_yx = kpt_offset[kpt_coordinate[:, 0].type(torch.LongTensor), kpt_coordinate[:, 1].type(torch.LongTensor), self.index_17.type(torch.LongTensor), :]
-    #     kpt_conf = kpt_heatmap[kpt_coordinate[:, 0].type(torch.LongTensor), kpt_coordinate[:, 1].type(torch.LongTensor), self.index_17.type(torch.LongTensor)].reshape(17, 1)
+        kpt_offset_yx = kpt_offset[kpt_coordinate[:, 0].type(torch.LongTensor), kpt_coordinate[:, 1].type(torch.LongTensor), self.index_17.type(torch.LongTensor), :]
+        kpt_conf = kpt_heatmap[kpt_coordinate[:, 0].type(torch.LongTensor), kpt_coordinate[:, 1].type(torch.LongTensor), self.index_17.type(torch.LongTensor)].reshape(17, 1)
 
-    #     kpt_coordinate= (kpt_offset_yx + kpt_coordinate) * 0.02083333395421505
-    #     kpt_with_conf = torch.cat([kpt_coordinate, kpt_conf], dim=1).reshape((1, 1, 17, 3))
+        kpt_coordinate= (kpt_offset_yx + kpt_coordinate) * 0.02083333395421505
+        kpt_with_conf = torch.cat([kpt_coordinate, kpt_conf], dim=1).reshape((1, 1, 17, 3))
 
-    #     return kpt_with_conf
-
-
+        return kpt_with_conf
 
 
-def get_pose_net(num_layers, heads, head_conv=96):
-    assert num_layers == 0
-    backbone = mobilenet_backbone('mobilenet_v2', pretrained=False, fpn=True, trainable_layers=0)
+
+
+def get_pose_net(heads, head_conv=96, froze_backbone=True):
+    backbone = mobilenet_backbone('mobilenet_v2', pretrained=False, fpn=True)
+    if froze_backbone:
+        for param in backbone.parameters():
+            param.requires_grad = False
     model = MoveNet(backbone, heads, head_conv=head_conv)
     return model

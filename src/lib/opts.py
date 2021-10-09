@@ -61,8 +61,9 @@ class opts(object):
         # model
         self.parser.add_argument('--arch', default='movenet',
                                  help='model architecture. Currently tested'
-                                      'res_18 | res_101 | resdcn_18 | resdcn_101 |'
-                                      'dlav0_34 | dla_34 | hourglass | movenet')
+                                      'movenet')
+        self.parser.add_argument('--froze-backbone', default=True, action='store_false',
+                                 help='whether froze the backbone during training')
         self.parser.add_argument('--head_conv', type=int, default=-1,
                                  help='conv layer channels for output head'
                                       '0 for no conv layer'
@@ -139,63 +140,63 @@ class opts(object):
         self.parser.add_argument('--aug_rot', type=float, default=0,
                                  help='probability of applying '
                                       'rotation augmentation.')
-        # ddd
-        self.parser.add_argument('--aug_ddd', type=float, default=0.5,
-                                 help='probability of applying crop augmentation.')
-        self.parser.add_argument('--rect_mask', action='store_true',
-                                 help='for ignored object, apply mask on the '
-                                      'rectangular region or just center point.')
-        self.parser.add_argument('--kitti_split', default='3dop',
-                                 help='different validation split for kitti: '
-                                      '3dop | subcnn')
+        # # ddd
+        # self.parser.add_argument('--aug_ddd', type=float, default=0.5,
+        #                          help='probability of applying crop augmentation.')
+        # self.parser.add_argument('--rect_mask', action='store_true',
+        #                          help='for ignored object, apply mask on the '
+        #                               'rectangular region or just center point.')
+        # self.parser.add_argument('--kitti_split', default='3dop',
+        #                          help='different validation split for kitti: '
+        #                               '3dop | subcnn')
 
         # loss
         self.parser.add_argument('--mse_loss', action='store_true',
                                  help='use mse loss or focal loss to train '
                                       'keypoint heatmaps.')
-        # ctdet
-        self.parser.add_argument('--reg_loss', default='l1',
-                                 help='regression loss: sl1 | l1 | l2')
-        self.parser.add_argument('--hm_weight', type=float, default=1,
-                                 help='loss weight for keypoint heatmaps.')
-        self.parser.add_argument('--off_weight', type=float, default=1,
-                                 help='loss weight for keypoint local offsets.')
-        self.parser.add_argument('--wh_weight', type=float, default=0.1,
-                                 help='loss weight for bounding box size.')
+        # # ctdet
+        # self.parser.add_argument('--reg_loss', default='l1',
+        #                          help='regression loss: sl1 | l1 | l2')
+        # self.parser.add_argument('--hm_weight', type=float, default=1,
+        #                          help='loss weight for keypoint heatmaps.')
+        # self.parser.add_argument('--off_weight', type=float, default=1,
+        #                          help='loss weight for keypoint local offsets.')
+        # self.parser.add_argument('--wh_weight', type=float, default=0.1,
+        #                          help='loss weight for bounding box size.')
         # multi_pose
         self.parser.add_argument('--hp_weight', type=float, default=1,
                                  help='loss weight for human pose offset.')
         self.parser.add_argument('--hm_hp_weight', type=float, default=1,
                                  help='loss weight for human keypoint heatmap.')
-        # ddd
-        self.parser.add_argument('--dep_weight', type=float, default=1,
-                                 help='loss weight for depth.')
-        self.parser.add_argument('--dim_weight', type=float, default=1,
-                                 help='loss weight for 3d bounding box size.')
-        self.parser.add_argument('--rot_weight', type=float, default=1,
-                                 help='loss weight for orientation.')
-        self.parser.add_argument('--peak_thresh', type=float, default=0.2)
+        # # ddd
+        # self.parser.add_argument('--dep_weight', type=float, default=1,
+        #                          help='loss weight for depth.')
+        # self.parser.add_argument('--dim_weight', type=float, default=1,
+        #                          help='loss weight for 3d bounding box size.')
+        # self.parser.add_argument('--rot_weight', type=float, default=1,
+        #                          help='loss weight for orientation.')
+        # self.parser.add_argument('--peak_thresh', type=float, default=0.2)
 
         # task
         # ctdet
-        self.parser.add_argument('--norm_wh', action='store_true',
-                                 help='L1(\hat(y) / y, 1) or L1(\hat(y), y)')
-        self.parser.add_argument('--dense_wh', action='store_true',
-                                 help='apply weighted regression near center or '
-                                      'just apply regression on center point.')
-        self.parser.add_argument('--cat_spec_wh', action='store_true',
-                                 help='category specific bounding box size.')
-        self.parser.add_argument('--not_reg_offset', action='store_true',
-                                 help='not regress local offset.')
-        # exdet
-        self.parser.add_argument('--agnostic_ex', action='store_true',
-                                 help='use category agnostic extreme points.')
-        self.parser.add_argument('--scores_thresh', type=float, default=0.1,
-                                 help='threshold for extreme point heatmap.')
-        self.parser.add_argument('--center_thresh', type=float, default=0.1,
-                                 help='threshold for centermap.')
-        self.parser.add_argument('--aggr_weight', type=float, default=0.0,
-                                 help='edge aggregation weight.')
+        # self.parser.add_argument('--norm_wh', action='store_true',
+        #                          help='L1(\hat(y) / y, 1) or L1(\hat(y), y)')
+        # self.parser.add_argument('--dense_wh', action='store_true',
+        #                          help='apply weighted regression near center or '
+        #                               'just apply regression on center point.')
+        # self.parser.add_argument('--cat_spec_wh', action='store_true',
+        #                          help='category specific bounding box size.')
+        # self.parser.add_argument('--not_reg_offset', action='store_true',
+        #                          help='not regress local offset.')
+        # # exdet
+        # self.parser.add_argument('--agnostic_ex', action='store_true',
+        #                          help='use category agnostic extreme points.')
+        # self.parser.add_argument('--scores_thresh', type=float, default=0.1,
+        #                          help='threshold for extreme point heatmap.')
+        # self.parser.add_argument('--center_thresh', type=float, default=0.1,
+        #                          help='threshold for centermap.')
+        # self.parser.add_argument('--aggr_weight', type=float, default=0.0,
+        #                          help='edge aggregation weight.')
         # multi_pose
         self.parser.add_argument('--dense_hp', action='store_true',
                                  help='apply weighted pose regression near center '
@@ -303,30 +304,30 @@ class opts(object):
         opt.input_res = max(opt.input_h, opt.input_w)
         opt.output_res = max(opt.output_h, opt.output_w)
 
-        if opt.task == 'exdet':
-            # assert opt.dataset in ['coco']
-            num_hm = 1 if opt.agnostic_ex else opt.num_classes
-            opt.heads = {'hm_t': num_hm, 'hm_l': num_hm,
-                         'hm_b': num_hm, 'hm_r': num_hm,
-                         'hm_c': opt.num_classes}
-            if opt.reg_offset:
-                opt.heads.update(
-                    {'reg_t': 2, 'reg_l': 2, 'reg_b': 2, 'reg_r': 2})
-        elif opt.task == 'ddd':
-            # assert opt.dataset in ['gta', 'kitti', 'viper']
-            opt.heads = {'hm': opt.num_classes, 'dep': 1, 'rot': 8, 'dim': 3}
-            if opt.reg_bbox:
-                opt.heads.update(
-                    {'wh': 2})
-            if opt.reg_offset:
-                opt.heads.update({'reg': 2})
-        elif opt.task == 'ctdet':
-            # assert opt.dataset in ['pascal', 'coco']
-            opt.heads = {'hm': opt.num_classes,
-                         'wh': 2 if not opt.cat_spec_wh else 2 * opt.num_classes}
-            if opt.reg_offset:
-                opt.heads.update({'reg': 2})
-        elif opt.task == 'multi_pose':
+        # if opt.task == 'exdet':
+        #     # assert opt.dataset in ['coco']
+        #     num_hm = 1 if opt.agnostic_ex else opt.num_classes
+        #     opt.heads = {'hm_t': num_hm, 'hm_l': num_hm,
+        #                  'hm_b': num_hm, 'hm_r': num_hm,
+        #                  'hm_c': opt.num_classes}
+        #     if opt.reg_offset:
+        #         opt.heads.update(
+        #             {'reg_t': 2, 'reg_l': 2, 'reg_b': 2, 'reg_r': 2})
+        # elif opt.task == 'ddd':
+        #     # assert opt.dataset in ['gta', 'kitti', 'viper']
+        #     opt.heads = {'hm': opt.num_classes, 'dep': 1, 'rot': 8, 'dim': 3}
+        #     if opt.reg_bbox:
+        #         opt.heads.update(
+        #             {'wh': 2})
+        #     if opt.reg_offset:
+        #         opt.heads.update({'reg': 2})
+        # elif opt.task == 'ctdet':
+        #     # assert opt.dataset in ['pascal', 'coco']
+        #     opt.heads = {'hm': opt.num_classes,
+        #                  'wh': 2 if not opt.cat_spec_wh else 2 * opt.num_classes}
+        #     if opt.reg_offset:
+        #         opt.heads.update({'reg': 2})
+        if opt.task == 'multi_pose':
             # assert opt.dataset in ['coco_hp']
             opt.flip_idx = dataset.flip_idx
             opt.heads = {'hm': opt.num_classes, 'wh': 2, 'hps': 34}
@@ -353,12 +354,12 @@ class opts(object):
 
     def init(self, args=''):
         default_dataset_info = {
-            'ctdet': {'default_resolution': [512, 512], 'num_classes': 80,
-                      'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
-                      'dataset': 'coco'},
-            'exdet': {'default_resolution': [512, 512], 'num_classes': 80,
-                      'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
-                      'dataset': 'coco'},
+            # 'ctdet': {'default_resolution': [512, 512], 'num_classes': 80,
+            #           'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
+            #           'dataset': 'coco'},
+            # 'exdet': {'default_resolution': [512, 512], 'num_classes': 80,
+            #           'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
+            #           'dataset': 'coco'},
             'multi_pose': {
                 'default_resolution': [512, 512], 'num_classes': 1,
                 'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
@@ -371,9 +372,9 @@ class opts(object):
                 'dataset': 'active', 'num_joints': 17,
                 'flip_idx': [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
                              [11, 12], [13, 14], [15, 16]]},
-            'ddd': {'default_resolution': [384, 1280], 'num_classes': 3,
-                    'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225],
-                    'dataset': 'kitti'},
+            # 'ddd': {'default_resolution': [384, 1280], 'num_classes': 3,
+            #         'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225],
+            #         'dataset': 'kitti'},
         }
 
         class Struct:

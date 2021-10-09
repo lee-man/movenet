@@ -8,7 +8,6 @@ from torchvision.ops import misc as misc_nn_ops
 from torchvision.models._utils import IntermediateLayerGetter
 # from torchvision.models import mobilenet
 from .mobilenetv2 import mobilenet_v2
-from torchvision.models import resnet
 
 
 class BackboneWithFPN(nn.Module):
@@ -54,7 +53,7 @@ def mobilenet_backbone(
     norm_layer=misc_nn_ops.FrozenBatchNorm2d,
     trainable_layers=2,
     returned_layers=None,
-    extra_blocks=None
+    extra_blocks=None,
 ):
     backbone = mobilenet_v2(pretrained=pretrained, norm_layer=norm_layer).features
     # print("backbone: ", backbone)
