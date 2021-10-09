@@ -46,19 +46,12 @@ class ConvBNActivation(nn.Sequential):
         #     norm_layer = nn.BatchNorm2d
         if activation_layer is None:
             activation_layer = nn.ReLU6
-<<<<<<< HEAD
         if stride == 2 and kernel_size == 3:
             super().__init__(
             nn.ZeroPad2d((0, 1, 0, 1)),
             nn.Conv2d(in_planes, out_planes, kernel_size, stride, 0, dilation=dilation, groups=groups,
                       bias=True),
             # norm_layer(out_planes),
-=======
-        super().__init__(
-            nn.Conv2d(in_planes, out_planes, kernel_size, stride, padding, dilation=dilation, groups=groups,
-                      bias=True),
-            norm_layer(out_planes),
->>>>>>> 0f209dddc673df41ea2e83bf3d60174144776799
             activation_layer(inplace=True)
         )
         else:
