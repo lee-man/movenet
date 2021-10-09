@@ -2,15 +2,21 @@
 Unofficial implementation of [MoveNet](https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html) from Google. This repo is heavily borrowed from [CenterNet](https://github.com/xingyizhou/CenterNet) and [TorchVision](https://github.com/pytorch/pytorch).
 
 ## Update
-**IMPORTANT:** I will simplify this codebase, and make it support the fine-tuning MoveNet on the customized dataset.
+I remove the redundant code for other dataset and tasks, simplify this codebase, and make it support the fine-tuning MoveNet on the customized dataset (named Active here).
 
 ## Run training code
 ```bash
 cd src
-python main.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --batch_size 24 --master_batch 4 --lr 5e-4 --gpus 0,1,2,3 --num_epochs 250 --lr_step 120,150,180,200,230  --num_workers 16 --eval_oracle_offset --eval_oracle_wh --load_model ../models/movenet.pth
+python main.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --batch_size 24 --master_batch 4 --lr 5e-4 --gpus 0,1,2,3 --num_epochs 250 --lr_step 120,150,180,200,230  --num_workers 16 --load_model ../models/movenet.pth
 ```
 ## Run evaluation code
-
+```bash
+cd src
+# test
+python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume
+# flip test
+python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume --flip_test
+```
 
 Below is the original README from CenterNet. It's ane excellent work and I realy like it.
 

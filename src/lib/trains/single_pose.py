@@ -36,7 +36,6 @@ class SinglePoseLoss(torch.nn.Module):
         for s in range(opt.num_stacks):
             output = outputs[s]
             output['hm'] = _sigmoid(output['hm'])
-            # if opt.hm_hp and not opt.mse_loss:
             output['hm_hp'] = _sigmoid(output['hm_hp'])
 
             hm_loss += self.crit(output['hm'], batch['hm']) / opt.num_stacks
