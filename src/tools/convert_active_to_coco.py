@@ -1,3 +1,11 @@
+'''
+Split `Active` dataset into training and test sets.
+Move this file to `{$movenet}/data/active` and run it.
+Author: Min LI
+
+TODO: Check whether keypoint mapping from MPII to COCO is correct.
+'''
+
 from PIL import Image
 import os
 import os.path as osp
@@ -11,6 +19,11 @@ train_percentage = 0.9
 annot_path = "annotations/active.json"
 train_save_path = "annotations/active_train.json"
 val_save_path = "annotations/active_val.json"
+
+if not osp.isdir('train'):
+    os.makedirs('train')
+if not osp.isdir('val'):
+    os.makedirs('val')
 
 
 print("Loading Acitve dataset...")
@@ -111,7 +124,7 @@ for img_id in val_index:
     filename = 'images/' + str(active[img_id]['image'])#filename
     filename_target = 'val/' + str(active[img_id]['image'])
     shutil.copy(filename, filename_target)
-    img = Image.open(osp.join('..', filename))
+    img = Image.open(osp.join('.', filename))
     w,h = img.size
     img_dict = {'id': aid, 'file_name': str(active[img_id]['image']), 'width': w, 'height': h}
     coco_val['images'].append(img_dict)

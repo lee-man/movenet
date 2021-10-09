@@ -31,8 +31,7 @@ class SinglePoseLoss(torch.nn.Module):
 
     def forward(self, outputs, batch):
         opt = self.opt
-        hm_loss = 0
-        hp_loss, hm_hp_loss, hp_offset_loss = 0, 0, 0, 0
+        hm_loss, hp_loss, hm_hp_loss, hp_offset_loss = 0, 0, 0, 0
         for s in range(opt.num_stacks):
             output = outputs[s]
             output['hm'] = _sigmoid(output['hm'])
