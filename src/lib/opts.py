@@ -12,7 +12,7 @@ class opts(object):
         self.parser = argparse.ArgumentParser()
         # basic experiment setting
         self.parser.add_argument('task', default='single_pose',
-                                 help='single_pose')
+                                 help='single_pose | multi_pose')
         self.parser.add_argument('--dataset', default='active',
                                  help='coco_hp | active | active_coco')
         self.parser.add_argument('--exp_id', default='default')
