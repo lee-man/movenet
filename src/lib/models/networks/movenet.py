@@ -98,7 +98,6 @@ class MoveNet(nn.Module):
 
         return [ret]
 
-<<<<<<< HEAD
         
     def _draw(self, ft):
         plt.imshow(ft.numpy().reshape(self.ft_size, self.ft_size))
@@ -177,10 +176,5 @@ def get_pose_net(heads, head_conv=96, froze_backbone=True):
     if froze_backbone:
         for param in backbone.parameters():
             param.requires_grad = False
-=======
-def get_pose_net(num_layers, heads, head_conv=256):
-    assert num_layers == 0
-    backbone = mobilenet_backbone('mobilenet_v2', pretrained=False, fpn=True, trainable_layers=0)
->>>>>>> 0f209dddc673df41ea2e83bf3d60174144776799
     model = MoveNet(backbone, heads, head_conv=head_conv)
     return model
