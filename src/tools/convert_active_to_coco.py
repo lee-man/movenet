@@ -109,7 +109,7 @@ coco_val = {'images': [], 'categories': [], 'annotations': []}
 for img_id in val_index:
     
     filename = 'images/' + str(active[img_id]['image'])#filename
-    filename_target = 'train/' + str(active[img_id]['image'])
+    filename_target = 'val/' + str(active[img_id]['image'])
     shutil.copy(filename, filename_target)
     img = Image.open(osp.join('..', filename))
     w,h = img.size
