@@ -186,8 +186,8 @@ class opts(object):
         #                               'just apply regression on center point.')
         # self.parser.add_argument('--cat_spec_wh', action='store_true',
         #                          help='category specific bounding box size.')
-        # self.parser.add_argument('--not_reg_offset', action='store_true',
-        #                          help='not regress local offset.')
+        self.parser.add_argument('--not_reg_offset', action='store_true',
+                                 help='not regress local offset.')
         # # exdet
         # self.parser.add_argument('--agnostic_ex', action='store_true',
         #                          help='use category agnostic extreme points.')
