@@ -64,7 +64,7 @@ def main(opt):
         pin_memory=True,
         drop_last=True
     )
-    exit()
+
     print('Starting training...')
     best = 1e10
     for epoch in range(start_epoch + 1, opt.num_epochs + 1):

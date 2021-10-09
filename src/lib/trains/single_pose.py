@@ -30,6 +30,8 @@ class SinglePoseLoss(torch.nn.Module):
         self.opt = opt
 
     def forward(self, outputs, batch):
+        print(batch)
+        exit()
         opt = self.opt
         hm_loss, hp_loss, hm_hp_loss, hp_offset_loss = 0, 0, 0, 0
         for s in range(opt.num_stacks):
