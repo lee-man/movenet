@@ -10,7 +10,7 @@ from __future__ import print_function
 
 import torch
 import torch.nn as nn
-from .utils import _transpose_and_gather_feat
+from .utils import _transpose_and_gather_feat, _transpose_and_gather_feat_plus
 import torch.nn.functional as F
 
 
@@ -141,7 +141,7 @@ class RegL1Loss(nn.Module):
     super(RegL1Loss, self).__init__()
   
   def forward(self, output, mask, ind, target):
-    pred = _transpose_and_gather_feat(output, ind)
+    pred = _transpose_and_gather_feat_plus(output, ind)
     mask = mask.unsqueeze(2).expand_as(pred).float()
     # loss = F.l1_loss(pred * mask, target * mask, reduction='elementwise_mean')
     loss = F.l1_loss(pred * mask, target * mask, size_average=False)
