@@ -33,10 +33,9 @@ def _gather_feat_plus(feat, ind, mask=None):
     # ind = torch.cat((ind, xy_ind), dim=2)
     # feat = feat.gather(1, ind)
     num_objs = ind.size(1) / 17
-    ind = ind.view(ind.size(0), num_objs, -1)
-    ind = ind.expand(ind.size(0), ind.size(1), ind.size(2), 2)
-    print(ind.size())
-    exit()
+    ind = ind.view(ind.size(0), int(num_objs), -1)
+    ind = ind.unsqueeze(3).expand(ind.size(0), ind.size(1), ind.size(2), 2)
+    feat = feat.gather(1, ind)
     # if mask is not None:
     #     mask = mask.unsqueeze(2).expand_as(feat)
     #     feat = feat[mask]
@@ -54,6 +53,7 @@ def _transpose_and_gather_feat_plus(feat, ind):
     feat = feat.permute(0, 2, 3, 1).contiguous()
     feat = feat.view(feat.size(0), -1, 17, 2)
     feat = _gather_feat_plus(feat, ind)
+    feat = feat.view(feat.size(0), -1, 2)
     return feat
 
 
