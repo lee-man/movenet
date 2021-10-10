@@ -44,7 +44,7 @@ class SinglePoseLoss(torch.nn.Module):
             print(output['hp_offset'].size())
             print(batch['hp_mask'].size())
             print(batch['hp_ind'].size())
-            print(batch['hp_offset'])
+            print(batch['hp_offset'].size())
             exit()
             hp_offset_loss += self.crit_reg(
                 output['hp_offset'], batch['hp_mask'],
