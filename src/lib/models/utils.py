@@ -23,6 +23,7 @@ def _gather_feat(feat, ind, mask=None):
 
 
 def _gather_feat_plus(feat, ind, mask=None):
+    print(feat.size())
     dim = feat.size(2)
     xy_ind = torch.arange(dim).to(feat.device).view(1, 1, -1)
     print(xy_ind.size())
@@ -45,7 +46,7 @@ def _transpose_and_gather_feat(feat, ind):
 
 def _transpose_and_gather_feat_plus(feat, ind):
     feat = feat.permute(0, 2, 3, 1).contiguous()
-    feat = feat.view(feat.size(0), -1, feat.size(3))
+    feat = feat.view(feat.size(0), -1, 17, 2)
     feat = _gather_feat_plus(feat, ind)
     return feat
 
