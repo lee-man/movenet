@@ -23,19 +23,24 @@ def _gather_feat(feat, ind, mask=None):
 
 
 def _gather_feat_plus(feat, ind, mask=None):
-    print(feat.size())
-    dim = feat.size(2)
+    # print(feat.size())
+    # dim = feat.size(2)
+    # print(ind.size())
+    # xy_ind = torch.arange(dim).to(feat.device).expand(ind.size(0), ind.size(1), dim)
+    # ind = torch.cat((ind, xy_ind), dim=3)
+    # print(ind.size())
+    # # ind = ind.unsqueeze(2).expand(ind.size(0), ind.size(1), 1)
+    # ind = torch.cat((ind, xy_ind), dim=2)
+    # feat = feat.gather(1, ind)
+    num_objs = ind.size(1) / 17
+    ind = ind.view(ind.size(0), num_objs, -1)
+    ind = ind.expand(ind.size(0), ind.size(1), ind.size(2), 2)
     print(ind.size())
-    xy_ind = torch.arange(dim).to(feat.device).expand(ind.size(0), ind.size(1), dim)
-    ind = torch.cat((ind, xy_ind), dim=3)
-    print(ind.size())
-    # ind = ind.unsqueeze(2).expand(ind.size(0), ind.size(1), 1)
-    ind = torch.cat((ind, xy_ind), dim=2)
-    feat = feat.gather(1, ind)
-    if mask is not None:
-        mask = mask.unsqueeze(2).expand_as(feat)
-        feat = feat[mask]
-        feat = feat.view(-1, dim)
+    exit()
+    # if mask is not None:
+    #     mask = mask.unsqueeze(2).expand_as(feat)
+    #     feat = feat[mask]
+    #     feat = feat.view(-1, dim)
     return feat
 
 
