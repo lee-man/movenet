@@ -23,9 +23,10 @@ def _gather_feat(feat, ind, mask=None):
 
 
 def _gather_feat_plus(feat, ind, mask=None):
+    print(feat.size())
     dim = feat.size(2)
     xy_ind = torch.arange(dim).to(feat.device).view(1, 1, -1)
-    # ind = ind.unsqueeze(2).expand(ind.size(0), ind.size(1), dim)
+    ind = ind.unsqueeze(2).expand(ind.size(0), ind.size(1), 1)
     ind = torch.stack((ind, xy_ind), dim=2)
     feat = feat.gather(1, ind)
     if mask is not None:
