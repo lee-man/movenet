@@ -32,14 +32,10 @@ class SinglePoseDetector(BaseDetector):
             # torch.cuda.synchronize()
             output = self.model(images)[-1]
             output['hm'] = output['hm'].sigmoid_()
-            if self.opt.hm_hp and not self.opt.mse_loss:
-                output['hm_hp'] = output['hm_hp'].sigmoid_()
+            output['hm_hp'] = output['hm_hp'].sigmoid_()
 
-            assert self.opt.hm_hp, "Should predict human keypoint heatmap."
-            assert self.opt.reg_hp_offset, "Should predict human keypoint offset."
-            reg = output['reg'] if self.opt.reg_offset else None
-            hm_hp = output['hm_hp'] if self.opt.hm_hp else None
-            hp_offset = output['hp_offset'] if self.opt.reg_hp_offset else None
+            hm_hp = output['hm_hp']
+            hp_offset = output['hp_offset']
             # torch.cuda.synchronize()
             forward_time = time.time()
 
@@ -52,12 +48,11 @@ class SinglePoseDetector(BaseDetector):
                                  flip_lr_off(output['hps'][1:2], self.flip_idx)) / 2
                 hm_hp = (hm_hp[0:1] + flip_lr(hm_hp[1:2], self.flip_idx)) / 2 \
                     if hm_hp is not None else None
-                reg = reg[0:1] if reg is not None else None
                 hp_offset = hp_offset[0:1] if hp_offset is not None else None
             # assert self.opt.K == 1, "Can only detect single human, please set `K` as 1."
             dets = single_pose_decode(
-                output['hm'], output['wh'], output['hps'],
-                reg=reg, hm_hp=hm_hp, hp_offset=hp_offset, K=self.opt.K)
+                output['hm'], None, output['hps'],
+                reg=None, hm_hp=hm_hp, hp_offset=hp_offset, K=self.opt.K)
 
         if return_time:
             return output, dets, forward_time

@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from pickle import NONE
 
 import torch
 import torch.nn as nn
@@ -684,16 +685,17 @@ def single_pose_decode(
     else:
         xs = xs.view(batch, K, 1) + 0.5
         ys = ys.view(batch, K, 1) + 0.5
-    wh = _transpose_and_gather_feat(wh, inds)
-    wh = wh.view(batch, K, 2)
+    # wh = _transpose_and_gather_feat(wh, inds)
+    # wh = wh.view(batch, K, 2)
     # print('wh size: ', wh.size())
     clses = clses.view(batch, K, 1).float()
     scores = scores.view(batch, K, 1)
 
-    bboxes = torch.cat([xs - wh[..., 0:1] / 2,
-                        ys - wh[..., 1:2] / 2,
-                        xs + wh[..., 0:1] / 2,
-                        ys + wh[..., 1:2] / 2], dim=2)
+    # bboxes = torch.cat([xs - wh[..., 0:1] / 2,
+    #                     ys - wh[..., 1:2] / 2,
+    #                     xs + wh[..., 0:1] / 2,
+    #                     ys + wh[..., 1:2] / 2], dim=2)
+    bboxes = None
     if hm_hp is not None:
         # print('hm_hp size: ', hm_hp.size())
         hm_hp = _nms(hm_hp)

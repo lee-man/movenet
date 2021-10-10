@@ -7,4 +7,4 @@ python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet
 python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume --flip_test
 cd ..
 
-# python demo.py single_pose --dataset active --arch movenet --demo ../images/active --load_model ../models/single_pose_active.pth --K 1 --gpus -1 --vis_thresh 0.0 --not_reg_offset
+# python demo.py single_pose --dataset active --arch movenet --demo ../images/active --load_model ../models/movenet.pth --K 1 --gpus -1 --vis_thresh 0.0 --not_reg_offset
