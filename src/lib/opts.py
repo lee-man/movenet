@@ -26,7 +26,7 @@ class opts(object):
         self.parser.add_argument('--demo', default='',
                                  help='path to image/ image folders/ video. '
                                       'or "webcam"')
-        self.parser.add_argument('--load_model', default='',
+        self.parser.add_argument('--load_model', default='../models/movenet.pth',
                                  help='path to pretrained model')
         self.parser.add_argument('--resume', action='store_true',
                                  help='resume an experiment. '
