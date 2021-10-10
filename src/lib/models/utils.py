@@ -25,6 +25,8 @@ def _gather_feat(feat, ind, mask=None):
 def _gather_feat_plus(feat, ind, mask=None):
     print(feat.size())
     dim = feat.size(2)
+    print(ind.size())
+    print(feat[:, ind, :, :].size())
     xy_ind = torch.arange(dim).to(feat.device).view(1, 1, -1)
     print(xy_ind.size())
     # ind = ind.unsqueeze(2).expand(ind.size(0), ind.size(1), 1)
