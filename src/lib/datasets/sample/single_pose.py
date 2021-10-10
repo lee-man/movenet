@@ -88,18 +88,10 @@ class SinglePoseDataset(data.Dataset):
                       output_res), dtype=np.float32)
         hm_hp = np.zeros((num_joints, output_res, output_res),
                          dtype=np.float32)
-        # dense_kps = np.zeros((num_joints, 2, output_res, output_res),
-        #                       dtype=np.float32)
-        # dense_kps_mask = np.zeros((num_joints, output_res, output_res),
-        #                            dtype=np.float32)
-        # wh = np.zeros((self.max_objs, 2), dtype=np.float32)
         kps = np.zeros((self.max_objs, num_joints * 2), dtype=np.float32)
-        # reg = np.zeros((self.max_objs, 2), dtype=np.float32)
         ind = np.zeros((self.max_objs), dtype=np.int64)
-        # reg_mask = np.zeros((self.max_objs), dtype=np.uint8)
         kps_mask = np.zeros(
             (self.max_objs, self.num_joints * 2), dtype=np.uint8)
-        # hp_offset = np.zeros((self.max_objs * num_joints, 2), dtype=np.float32)
         hp_offset = np.zeros((self.max_objs * num_joints, 2), dtype=np.float32)
         hp_ind = np.zeros((self.max_objs * num_joints), dtype=np.int64)
         hp_mask = np.zeros((self.max_objs * num_joints), dtype=np.int64)
@@ -129,14 +121,10 @@ class SinglePoseDataset(data.Dataset):
                 ct = np.array(
                     [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2], dtype=np.float32)
                 ct_int = ct.astype(np.int32)
-                # wh[k] = 1. * w, 1. * h
                 ind[k] = ct_int[1] * output_res + ct_int[0]
-                # reg[k] = ct - ct_int
-                # reg_mask[k] = 1
                 num_kpts = pts[:, 2].sum()
                 if num_kpts == 0:
                     hm[cls_id, ct_int[1], ct_int[0]] = 0.9999
-                    # reg_mask[k] = 0
 
                 hp_radius = gaussian_radius((math.ceil(h), math.ceil(w)))
                 hp_radius = self.opt.hm_gauss \
@@ -154,11 +142,6 @@ class SinglePoseDataset(data.Dataset):
                             hp_ind[k * num_joints + j] = pt_int[1] * \
                                 output_res + pt_int[0]
                             hp_mask[k * num_joints + j] = 1
-                            # if self.opt.dense_hp:
-                            #   # must be before draw center hm gaussian
-                            #   draw_dense_reg(dense_kps[j], hm[cls_id], ct_int,
-                            #                  pts[j, :2] - ct_int, radius, is_offset=True)
-                            #   draw_gaussian(dense_kps_mask[j], ct_int, radius)
                             draw_gaussian(hm_hp[j], pt_int, hp_radius)
                 draw_gaussian(hm[cls_id], ct_int, radius)
                 gt_det.append([ct[0] - w / 2, ct[1] - h / 2,
