@@ -123,7 +123,7 @@ class ACTIVE(data.Dataset):
             bbox_out = list(map(self._to_float, bbox))
             score = np.sum(dets[:, 2]) / 4
             keypoints = np.concatenate([
-                dets[:, :2],
+                dets[:, [1, 0]],
                 np.ones((17, 1), dtype=np.float32)], axis=1)
             keypoints[1:5] = np.zeros((4, 3))
             keypoints = keypoints.reshape(51).tolist()
