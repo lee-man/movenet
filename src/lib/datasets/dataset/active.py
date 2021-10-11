@@ -120,6 +120,7 @@ class ACTIVE(data.Dataset):
             category_id = 1
             dets = all_dets[image_id]
             bbox = self.bbox_from_kpt(dets)
+            bbox_out = list(map(self._to_float, bbox))
             score = np.sum(dets[:, 2]) / 4
             keypoints = np.concatenate([
                 dets[:, :2],
@@ -130,7 +131,7 @@ class ACTIVE(data.Dataset):
             detection = {
                 "image_id": int(image_id),
                 "category_id": int(category_id),
-                "bbox": bbox,
+                "bbox": bbox_out,
                 "score": float("{:.2f}".format(score)),
                 "keypoints": keypoints
             }
