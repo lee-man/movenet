@@ -62,12 +62,11 @@ class SinglePoseDetector(BaseDetector):
         img = images[0].detach().cpu().numpy().transpose(1, 2, 0)
         img = np.clip(((
             img * self.std + self.mean) * 255.), 0, 255).astype(np.uint8)
-        pred = debugger.gen_colormap(output['hm'][0].detach().cpu().numpy())
+        pred = debugger.gen_colormap(torch.sigmoid(output['hm'][0]).detach().cpu().numpy())
         debugger.add_blend_img(img, pred, 'pred_hm')
-        if self.opt.hm_hp:
-            pred = debugger.gen_colormap_hp(
-                output['hm_hp'][0].detach().cpu().numpy())
-            debugger.add_blend_img(img, pred, 'pred_hmhp')
+        pred = debugger.gen_colormap_hp(
+            torch.sigmoid(output['hm_hp'][0]).detach().cpu().numpy())
+        debugger.add_blend_img(img, pred, 'pred_hmhp')
 
     def show_results(self, debugger, image, results):
         debugger.add_img(image, img_id='single_pose')

@@ -28,12 +28,12 @@ python test.py single_pose --exp_id movenet --dataset active --arch movenet --lo
 1. For the finetuned model, move the checkpoint to directory `models` and run:
    ```bash
    cd src
-   python demo.py single_pose --dataset active --arch movenet --demo ../images/active --load_model ../models/{$MODEL} --K 1 --gpus -1 --vis_thresh 0.0
+   python demo.py single_pose --dataset active --arch movenet --demo ../images/active --load_model ../models/{$MODEL} --K 1 --gpus -1 --debug 2
    ```
 2. For original MoveNet, run:
    ```bash
    cd src
-   python demo.py single_pose --dataset active --arch movenet --demo ../images --load_model ../models/movenet.pth --K 1 --gpus -1
+   python demo.py single_pose --dataset active --arch movenet --demo ../images --load_model ../models/movenet.pth --K 1 --gpus -1 --debug 2
    ``` 
   
 ## TODO
