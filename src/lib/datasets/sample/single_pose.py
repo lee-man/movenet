@@ -36,6 +36,7 @@ class SinglePoseDataset(data.Dataset):
         num_objs = min(len(anns), self.max_objs)
 
         img = cv2.imread(img_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
 
         height, width = img.shape[0], img.shape[1]
         c = np.array([img.shape[1] / 2., img.shape[0] / 2.], dtype=np.float32)
@@ -72,7 +73,7 @@ class SinglePoseDataset(data.Dataset):
         inp = cv2.warpAffine(img, trans_input,
                              (self.opt.input_res, self.opt.input_res),
                              flags=cv2.INTER_LINEAR)
-        inp = (inp.astype(np.float32) / 255.)
+        inp = (inp.astype(np.float32) / 127.5.)
         if self.split == 'train' and not self.opt.no_color_aug:
             color_aug(self._data_rng, inp, self._eig_val, self._eig_vec)
         inp = (inp - self.mean) / self.std

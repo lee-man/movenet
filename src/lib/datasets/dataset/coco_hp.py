@@ -128,9 +128,6 @@ class COCOHP(data.Dataset):
                   open('{}/results.json'.format(save_dir), 'w'))
 
     def run_eval(self, results, save_dir):
-        # result_json = os.path.join(opt.save_dir, "results.json")
-        # detections  = convert_eval_format(all_boxes)
-        # json.dump(detections, open(result_json, "w"))
         self.save_results(results, save_dir)
         coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
         coco_eval = COCOeval(self.coco, coco_dets, "keypoints")

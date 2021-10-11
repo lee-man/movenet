@@ -27,15 +27,8 @@ def load_model(model, model_path, optimizer=None, resume=False,
     checkpoint = torch.load(
         model_path, map_location=lambda storage, loc: storage)
     # print('loaded {}, epoch {}'.format(model_path, checkpoint['epoch']))
-    state_dict_ = checkpoint # ['state_dict']
-    state_dict = {}
+    state_dict = checkpoint # ['state_dict']
 
-    # convert data_parallal to model
-    for k in state_dict_:
-        if k.startswith('module') and not k.startswith('module_list'):
-            state_dict[k[7:]] = state_dict_[k]
-        else:
-            state_dict[k] = state_dict_[k]
     model_state_dict = model.state_dict()
 
     # check loaded parameters and created model parameters

@@ -103,20 +103,11 @@ class opts(object):
         # test
         self.parser.add_argument('--flip_test', action='store_true',
                                  help='flip data augmentation.')
-        self.parser.add_argument('--test_scales', type=str, default='1',
-                                 help='multi scale test augmentation.')
         self.parser.add_argument('--nms', action='store_true',
                                  help='run nms in testing.')
         self.parser.add_argument('--K', type=int, default=100,
                                  help='max number of output objects.')
-        self.parser.add_argument('--not_prefetch_test', action='store_true',
-                                 help='not use parallal data pre-processing.')
-        self.parser.add_argument('--fix_res', action='store_true',
-                                 help='fix testing resolution or keep '
-                                      'the original resolution')
-        self.parser.add_argument('--keep_res', action='store_true',
-                                 help='keep the original resolution'
-                                      ' during validation.')
+
 
         # dataset
         self.parser.add_argument('--not_rand_crop', action='store_true',
@@ -171,10 +162,6 @@ class opts(object):
         opt.gpus = [i for i in range(
             len(opt.gpus))] if opt.gpus[0] >= 0 else [-1]
         opt.lr_step = [int(i) for i in opt.lr_step.split(',')]
-        opt.test_scales = [float(i) for i in opt.test_scales.split(',')]
-
-        opt.fix_res = not opt.keep_res
-        print('Fix size testing.' if opt.fix_res else 'Keep resolution testing.')
 
 
         if opt.head_conv == -1:  # init default head_conv
@@ -262,7 +249,7 @@ class opts(object):
                              [11, 12], [13, 14], [15, 16]]},
             'single_pose': {
                 'default_resolution': [512, 512], 'num_classes': 1,
-                'mean': [0.5, 0.5, 0.5], 'std': [1., 1., 1.],
+                'mean': [1., 1., 1.], 'std': [1., 1., 1.],
                 'dataset': 'active', 'num_joints': 17,
                 'flip_idx': [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
                              [11, 12], [13, 14], [15, 16]]},

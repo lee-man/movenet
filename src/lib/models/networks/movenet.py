@@ -27,26 +27,6 @@ BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
 
 
-def fill_up_weights(up):
-    w = up.weight.data
-    f = math.ceil(w.size(2) / 2)
-    c = (2 * f - 1 - f % 2) / (2. * f)
-    for i in range(w.size(2)):
-        for j in range(w.size(3)):
-            w[0, 0, i, j] = \
-                (1 - math.fabs(i / f - c)) * (1 - math.fabs(j / f - c))
-    for c in range(1, w.size(0)):
-        w[c, 0, :, :] = w[0, 0, :, :] 
-
-def fill_fc_weights(layers):
-    for m in layers.modules():
-        if isinstance(m, nn.Conv2d):
-            nn.init.normal_(m.weight, std=0.001)
-            # torch.nn.init.kaiming_normal_(m.weight.data, nonlinearity='relu')
-            # torch.nn.init.xavier_normal_(m.weight.data)
-            if m.bias is not None:
-                nn.init.constant_(m.bias, 0)
-
 class MoveNet(nn.Module):
     '''
     MoveNet from Goolge. Please refer their blog: https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html
@@ -58,10 +38,10 @@ class MoveNet(nn.Module):
         self.backbone = backbone
         self.heads = heads
         self.ft_size = ft_size
-        # self.weight_to_center = self._generate_center_dist(self.ft_size).unsqueeze(2)
+        self.weight_to_center = self._generate_center_dist(self.ft_size).unsqueeze(2)
  
-        # self.dist_y, self.dist_x = self._generate_dist_map(self.ft_size)
-        # self.index_17 = torch.arange(0, 17).float()
+        self.dist_y, self.dist_x = self._generate_dist_map(self.ft_size)
+        self.index_17 = torch.arange(0, 17).float()
 
         for head in self.heads:
             classes = self.heads[head]
@@ -73,18 +53,10 @@ class MoveNet(nn.Module):
                   nn.Conv2d(head_conv, classes, 
                     kernel_size=1, stride=1, 
                     padding=0, bias=True))
-                # if 'hm' in head:
-                #     fc[-1].bias.data.fill_(-2.19)
-                # else:
-                #     fill_fc_weights(fc)
             else:
                 fc = nn.Conv2d(64, classes, 
                   kernel_size=1, stride=1, 
                   padding=0, bias=True)
-                # if 'hm' in head:
-                #     fc.bias.data.fill_(-2.19)
-                # else:
-                #     fill_fc_weights(fc)
             self.__setattr__(head, fc)
 
 
@@ -99,8 +71,7 @@ class MoveNet(nn.Module):
         return [ret]
 
     def decode(self, x):
-
-        kpt_heatmap, center, kpt_regress, kpt_offset = x['hm_hp'].permute((1, 2, 0)), x['hm'].permute((1, 2, 0)), x['hps'].permute((1, 2, 0)), x['hp_offset'].permute((1, 2, 0))
+        kpt_heatmap, center, kpt_regress, kpt_offset = x['hm_hp'].squeeze(0).permute((1, 2, 0)), x['hm'].squeeze(0).permute((1, 2, 0)), x['hps'].squeeze(0).permute((1, 2, 0)), x['hp_offset'].squeeze(0).permute((1, 2, 0))
 
         # pose decode
         kpt_heatmap = torch.sigmoid(kpt_heatmap)
