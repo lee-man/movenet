@@ -37,10 +37,6 @@ Note: wil make it support testing using GPUs.
    cd src
    python demo.py single_pose --dataset active --arch movenet --demo ../images --load_model ../models/movenet.pth --K 1 --gpus -1 --debug 2
    ``` 
-  
-## TODO
-1. Modify the post-process code.
-2. Construct the connection between this Repo and [movenet-pytorch](https://github.com/lee-man/movenet-pytorch).
 
 Below is the original README from CenterNet. It's ane excellent work and I realy like it.
 
