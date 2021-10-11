@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from typing import Dict
 
 import torchvision.models as models
 import torch
@@ -27,7 +28,10 @@ def load_model(model, model_path, optimizer=None, resume=False,
     checkpoint = torch.load(
         model_path, map_location=lambda storage, loc: storage)
     # print('loaded {}, epoch {}'.format(model_path, checkpoint['epoch']))
-    state_dict = checkpoint # ['state_dict']
+    if 'state_dict' in checkpoint.keys():
+        state_dict = checkpoint['state_dict']
+    else:
+        state_dict = checkpoint
 
     model_state_dict = model.state_dict()
 
