@@ -12,18 +12,20 @@ Move the images and annotations into data and name the folder as `Active`. The a
 ## Run training code
 ```bash
 cd src
-python main.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --batch_size 24 --lr 5e-4 --gpus 0 --num_epochs 250 --lr_step 120,150,180,200,230  --num_workers 16 --load_model ../models/movenet.pth
+python main.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --batch_size 24  --lr 5e-4 --gpus 0 --num_epochs 50 --lr_step 30 --num_workers 4 --load_model ../models/movenet.pth
 ```
 ## Run evaluation code
 ```bash
 cd src
-python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume
+python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume --gpus -1
 ```
 To directly test the pre-trained Movenet, run:
 ```bash
 cd src
-python test.py single_pose --exp_id movenet --dataset active --arch movenet --load_model ../models/movenet.pth
+python test.py single_pose --exp_id movenet --dataset active --arch movenet --load_model ../models/movenet.pth --gpus -1
 ```
+
+Note: wil make it support testing using GPUs.
 ## Run demo code
 1. For the finetuned model, move the checkpoint to directory `models` and run:
    ```bash
