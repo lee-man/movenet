@@ -17,13 +17,11 @@ python main.py single_pose --exp_id yoga_movenet --dataset active --arch movenet
 ## Run evaluation code
 ```bash
 cd src
-# test
 python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume
 ```
 To directly test the pre-trained Movenet, run:
 ```bash
 cd src
-# test
 python test.py single_pose --exp_id movenet --dataset active --arch movenet --load_model ../models/movenet.pth
 ```
 ## Run demo code

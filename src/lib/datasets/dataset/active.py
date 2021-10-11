@@ -92,6 +92,26 @@ class ACTIVE(data.Dataset):
     def _to_float(self, x):
         return float("{:.2f}".format(x))
 
+    def bbox_from_kpt(self, kpts):
+        bbox = np.zeros((4))
+        xmin = np.min(annot_kps[:,0])
+        ymin = np.min(annot_kps[:,1])
+        xmax = np.max(annot_kps[:,0])
+        ymax = np.max(annot_kps[:,1])
+        width = xmax - xmin - 1
+        height = ymax - ymin - 1
+        
+        # corrupted bounding box
+        if width <= 0 or height <= 0:
+            return bbox
+        # 20% extend    
+        else:
+            bbox[0] = (xmin + xmax)/2. - width/2*1.2
+            bbox[1] = (ymin + ymax)/2. - height/2*1.2
+            bbox[2] = width*1.2
+            bbox[3] = height*1.2
+        return bbox
+
     def convert_eval_format(self, all_dets):
         # import pdb; pdb.set_trace()
         print()
@@ -100,7 +120,7 @@ class ACTIVE(data.Dataset):
             category_id = 1
             dets = all_dets[image_id]
             bbox = None
-            score = None
+            score = np.sum(dets[:, 2]) / 4
             keypoints = np.concatenate([
                 dets[:, :2],
                 np.ones((17, 1), dtype=np.float32)], axis=1)
@@ -111,7 +131,7 @@ class ACTIVE(data.Dataset):
                 "image_id": int(image_id),
                 "category_id": int(category_id),
                 "bbox": bbox,
-                "score": score,
+                "score": float("{:.2f}".format(score)),
                 "keypoints": keypoints
             }
             detections.append(detection)
