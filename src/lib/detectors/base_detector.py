@@ -37,15 +37,19 @@ class BaseDetector(object):
 
     def pre_process(self, image, scale, meta=None):
         height, width = image.shape[0:2]
-        new_height = int(height * scale)
-        new_width = int(width * scale)
+        # new_height = int(height * scale)
+        # new_width = int(width * scale)
+        new_height = 192
+        new_width = 192
         if self.opt.fix_res:
             inp_height, inp_width = self.opt.input_h, self.opt.input_w
             c = np.array([new_width / 2., new_height / 2.], dtype=np.float32)
             s = max(height, width) * 1.0
         else:
-            inp_height = (new_height | self.opt.pad) + 1
-            inp_width = (new_width | self.opt.pad) + 1
+            # inp_height = (new_height | self.opt.pad) + 1
+            # inp_width = (new_width | self.opt.pad) + 1
+            inp_height = new_height
+            inp_width = new_width
             c = np.array([new_width // 2, new_height // 2], dtype=np.float32)
             s = np.array([inp_width, inp_height], dtype=np.float32)
 
@@ -59,8 +63,6 @@ class BaseDetector(object):
 
         images = inp_image.transpose(2, 0, 1).reshape(
             1, 3, inp_height, inp_width)
-        if self.opt.flip_test:
-            images = np.concatenate((images, images[:, :, :, ::-1]), axis=0)
         images = torch.from_numpy(images)
         meta = {'c': c, 's': s,
                 'out_height': inp_height // self.opt.down_ratio,

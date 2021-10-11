@@ -30,29 +30,11 @@ class SinglePoseDetector(BaseDetector):
     def process(self, images, return_time=False):
         with torch.no_grad():
             # torch.cuda.synchronize()
+            dets = self.model.decode(images)
             output = self.model(images)[-1]
-            output['hm'] = output['hm'].sigmoid_()
-            output['hm_hp'] = output['hm_hp'].sigmoid_()
-
-            hm_hp = output['hm_hp']
-            hp_offset = output['hp_offset']
+            dets = self.model.decode(output)
             # torch.cuda.synchronize()
             forward_time = time.time()
-
-            if self.opt.flip_test:
-                output['hm'] = (output['hm'][0:1] +
-                                flip_tensor(output['hm'][1:2])) / 2
-                output['wh'] = (output['wh'][0:1] +
-                                flip_tensor(output['wh'][1:2])) / 2
-                output['hps'] = (output['hps'][0:1] +
-                                 flip_lr_off(output['hps'][1:2], self.flip_idx)) / 2
-                hm_hp = (hm_hp[0:1] + flip_lr(hm_hp[1:2], self.flip_idx)) / 2 \
-                    if hm_hp is not None else None
-                hp_offset = hp_offset[0:1] if hp_offset is not None else None
-            # assert self.opt.K == 1, "Can only detect single human, please set `K` as 1."
-            dets = single_pose_decode(
-                output['hm'], None, output['hps'],
-                reg=None, hm_hp=hm_hp, hp_offset=hp_offset, K=self.opt.K)
 
         if return_time:
             return output, dets, forward_time

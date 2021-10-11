@@ -7,7 +7,7 @@ See my another repo [lee-man/movenet-pytorch](https://github.com/lee-man/movenet
 I remove the redundant code for other dataset and tasks, simplify this codebase, and make it support the fine-tuning MoveNet on the customized dataset (named *Active* here).
 
 ## Prepare the datasets
-Move the images and annotations into data and name the folder `Active`. The annotation format should be COCO format. If you annotate the images with MPII format, you can utilize [convert_active_to_coco.py](src/tools/convert_active_to_coco.py) and [convert_mpii_to_coco.py](src/tools/convert_mpii_to_coco.py).
+Move the images and annotations into data and name the folder as `Active`. The annotation format should be COCO format. If you annotate the images with MPII format, you can utilize [convert_active_to_coco.py](src/tools/convert_active_to_coco.py) and [convert_mpii_to_coco.py](src/tools/convert_mpii_to_coco.py).
 
 ## Run training code
 ```bash
@@ -19,16 +19,16 @@ python main.py single_pose --exp_id yoga_movenet --dataset active --arch movenet
 cd src
 # test
 python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume
-# flip test
-python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume --flip_test
 ```
 ## Run demo code
 1. For the finetuned model, move the checkpoint to directory `models` and run:
    ```bash
+   cd src
    python demo.py single_pose --dataset active --arch movenet --demo ../images/active --load_model ../models/{$MODEL} --K 1 --gpus -1 --vis_thresh 0.0
    ```
 2. For original MoveNet, run:
    ```bash
+   cd src
    python demo.py single_pose --dataset active --arch movenet --demo ../images/active --load_model ../models/movenet.pth --K 1 --gpus -1 --vis_thresh 0.0
    ``` 
   

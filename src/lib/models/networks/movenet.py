@@ -98,17 +98,9 @@ class MoveNet(nn.Module):
 
         return [ret]
 
-    def inference(self, x):
-        # conv forward
-        x  = x * 0.007843137718737125 - 1.0
-        x = self.backbone(x)
-        ret = {}
-        for head in self.heads:
-            ret[head] = self.__getattr__(head)(x)
+    def decode(self, x):
 
-        x = ret
-
-        kpt_heatmap, center, kpt_regress, kpt_offset = x['hm_hp'].squeeze(0).permute((1, 2, 0)), x['hm'].squeeze(0).permute((1, 2, 0)), x['hps'].squeeze(0).permute((1, 2, 0)), x['hp_offset'].squeeze(0).permute((1, 2, 0))
+        kpt_heatmap, center, kpt_regress, kpt_offset = x['hm_hp'].permute((1, 2, 0)), x['hm'].permute((1, 2, 0)), x['hps'].permute((1, 2, 0)), x['hp_offset'].permute((1, 2, 0))
 
         # pose decode
         kpt_heatmap = torch.sigmoid(kpt_heatmap)
