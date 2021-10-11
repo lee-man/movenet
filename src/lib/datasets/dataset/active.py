@@ -102,11 +102,10 @@ class ACTIVE(data.Dataset):
             bbox = None
             score = None
             keypoints = np.concatenate([
-                dets[:2],
-                np.ones((17, 1), dtype=np.float32)], axis=1).reshape(51).tolist()
-            print(keypoints.size())
-            exit()
+                dets[:, :2],
+                np.ones((17, 1), dtype=np.float32)], axis=1)
             keypoints[1:5] = np.zeros((4, 3))
+            keypoints = keypoints.reshape(51).tolist()
             keypoints = list(map(self._to_float, keypoints))
             detection = {
                 "image_id": int(image_id),

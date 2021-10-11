@@ -12,7 +12,7 @@ import time
 from progress.bar import Bar
 import torch
 
-from external.nms import soft_nms
+# from external.nms import soft_nms
 from opts import opts
 from logger import Logger
 from utils.utils import AverageMeter
