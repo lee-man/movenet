@@ -94,10 +94,10 @@ class ACTIVE(data.Dataset):
 
     def bbox_from_kpt(self, kpts):
         bbox = np.zeros((4))
-        xmin = np.min(annot_kps[:,0])
-        ymin = np.min(annot_kps[:,1])
-        xmax = np.max(annot_kps[:,0])
-        ymax = np.max(annot_kps[:,1])
+        xmin = np.min(kpts[:,0])
+        ymin = np.min(kpts[:,1])
+        xmax = np.max(kpts[:,0])
+        ymax = np.max(kpts[:,1])
         width = xmax - xmin - 1
         height = ymax - ymin - 1
         
@@ -119,7 +119,7 @@ class ACTIVE(data.Dataset):
         for image_id in all_dets:
             category_id = 1
             dets = all_dets[image_id]
-            bbox = None
+            bbox = self.bbox_from_kpt(dets)
             score = np.sum(dets[:, 2]) / 4
             keypoints = np.concatenate([
                 dets[:, :2],
