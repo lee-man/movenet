@@ -43,7 +43,7 @@ class SinglePoseDetector(BaseDetector):
 
     def post_process(self, dets, meta):
         dets = dets[0, 0, :, :]
-        dets = dets.numpy()
+        dets = dets.cpu().numpy()
         dets = single_pose_post_process(
             dets.copy(),
             meta['in_height'], meta['in_width'])
