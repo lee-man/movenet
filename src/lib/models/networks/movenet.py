@@ -63,6 +63,11 @@ class MoveNet(nn.Module):
     def forward(self, x):
         # conv forward
         # x  = x * 0.007843137718737125 - 1.0
+        # specify the device
+        device = x.device
+        self.weight_to_center = self.weight_to_center.to(device)
+        self.dist_y, self.dist_x = self.dist_y.to(device), self.dist_x.to(device)
+
         x = self.backbone(x)
         ret = {}
         for head in self.heads:
@@ -73,23 +78,23 @@ class MoveNet(nn.Module):
     def decode(self, x):
         kpt_heatmap, center, kpt_regress, kpt_offset = x['hm_hp'].squeeze(0).permute((1, 2, 0)), x['hm'].squeeze(0).permute((1, 2, 0)), x['hps'].squeeze(0).permute((1, 2, 0)), x['hp_offset'].squeeze(0).permute((1, 2, 0))
 
-        # pose decode
+         # pose decode
         kpt_heatmap = torch.sigmoid(kpt_heatmap)
         center = torch.sigmoid(center)
 
-        ct_y, ct_x = self._top_with_center(center, self.ft_size)
-        ct_y, ct_x = ct_y.squeeze(0).type(torch.LongTensor), ct_x.squeeze(0).type(torch.LongTensor)
-        kpt_ys_regress, kpt_xs_regress = self._center_to_kpt(kpt_regress, ct_y, ct_x)
-        kpt_ys_heatmap, kpt_xs_heatmap = self._kpt_from_heatmap(kpt_heatmap, kpt_ys_regress, kpt_xs_regress, self.ft_size)
+        ct_ind = self._top_with_center(center)
 
-        kpt_with_conf = self._kpt_from_offset(kpt_offset, kpt_ys_heatmap, kpt_xs_heatmap, kpt_heatmap, self.ft_size)
+        kpt_coor = self._center_to_kpt(kpt_regress, ct_ind)
+
+        kpt_top_inds = self._kpt_from_heatmap(kpt_heatmap, kpt_coor)
+
+        kpt_with_conf = self._kpt_from_offset(kpt_offset, kpt_top_inds, kpt_heatmap, self.ft_size)
         
         return kpt_with_conf
 
         
     def _draw(self, ft):
         plt.imshow(ft.numpy().reshape(self.ft_size, self.ft_size))
-        # img = (data-np.min(data))/(np.max(data)-np.min(data))*255
         plt.show()
 
     def _generate_center_dist(self, ft_size=48, delta=1.8):
@@ -98,7 +103,6 @@ class MoveNet(nn.Module):
         center_y, center_x = ft_size / 2.0, ft_size/ 2.0
         y = y - center_y
         x = x - center_x
-        # weight_to_center = 1 / (np.sqrt(np.abs(x) + np.abs(y)) + delta)
         weight_to_center = 1 / (np.sqrt(y * y + x * x) + delta)
         weight_to_center = torch.from_numpy(weight_to_center)
         return weight_to_center
@@ -111,48 +115,51 @@ class MoveNet(nn.Module):
         return y, x
 
 
-    def _top_with_center(self, center, size=48):
+    def _top_with_center(self, center):
         scores = center * self.weight_to_center
 
-        top_indx = torch.argmax(scores.view(1, 48 * 48, 1), dim=1)
-        # top_y = torch.div(top_indx, size, rounding_mode='floor')
-        top_y = (top_indx / size).int().float()
-        top_x = top_indx - top_y * size
+        top_ind = torch.argmax(scores.view(1, 48 * 48, 1), dim=1)
+        return top_ind
 
-        return top_y, top_x
+    def _center_to_kpt(self, kpt_regress, ct_ind, ft_size=48):
+        ct_y = torch.div(ct_ind, ft_size, rounding_mode='floor')
+        # ct_y = (ct_ind.float() / ft_size).int().float()
+        ct_x = ct_ind - ct_y * ft_size
 
-    def _center_to_kpt(self, kpt_regress, ct_y, ct_x):
-        kpt_coor = kpt_regress[ct_y, ct_x, :] #.squeeze(0)
-        # kpt_coor = kpt_coor.reshape((17, 2))
-        ys, xs = kpt_coor[0, :17] + ct_y.float(), kpt_coor[0, 17:] + ct_x.float()
+        kpt_regress = kpt_regress.view(-1, 17, 2)
+        ct_ind = ct_ind.unsqueeze(2).expand(ct_ind.size(0), 17, 2)
+        kpt_coor = kpt_regress.gather(0, ct_ind).squeeze(0)
         
-        return (ys, xs)
+        kpt_coor = kpt_coor + torch.cat((ct_y, ct_x), dim=1)
+        
+        return kpt_coor
 
-    def _kpt_from_heatmap(self, kpt_heatmap, kpt_ys, kpt_xs, size=48):
-        y = self.dist_y - kpt_ys.reshape(1, 1, 17)
-        x = self.dist_x - kpt_xs.reshape(1, 1, 17)
+    def _kpt_from_heatmap(self, kpt_heatmap, kpt_coor):
+        y = self.dist_y - kpt_coor[:, 0].reshape(1, 1, 17)
+        x = self.dist_x - kpt_coor[:, 1].reshape(1, 1, 17)
         dist_weight = torch.sqrt(y * y + x * x) + 1.8
         
         scores = kpt_heatmap / dist_weight
         scores = scores.reshape((1, 48 * 48, 17))
         top_inds = torch.argmax(scores, dim=1)
-        # kpts_ys = torch.div(top_inds, size, rounding_mode='floor')
-        kpts_ys = (top_inds / size).int().float()
-        kpts_xs = top_inds - kpts_ys * size
-        return kpts_ys, kpts_xs
+        
+        return top_inds
     
-    def _kpt_from_offset(self, kpt_offset, kpts_ys, kpts_xs, kpt_heatmap, size=48):
-        kpt_offset = kpt_offset.reshape(size, size, 17, 2)
-        kpt_coordinate = torch.stack([kpts_ys.squeeze(0), kpts_xs.squeeze(0)], dim=1)
+    def _kpt_from_offset(self, kpt_offset, kpt_top_inds, kpt_heatmap, size=48):
+        kpts_ys = torch.div(kpt_top_inds, size, rounding_mode='floor')
+        # kpts_ys = (kpt_top_inds.float() / size).int().float()
+        kpts_xs = kpt_top_inds - kpts_ys * size
+        kpt_coordinate = torch.stack((kpts_ys.squeeze(0), kpts_xs.squeeze(0)), dim=1)
 
-        kpt_offset_yx = torch.zeros((17, 2))
-        kpt_conf = torch.zeros((17, 1))
+        kpt_heatmap = kpt_heatmap.view(-1, 17)
+        kpt_conf = kpt_heatmap.gather(0, kpt_top_inds).squeeze(0)
 
-        kpt_offset_yx = kpt_offset[kpt_coordinate[:, 0].type(torch.LongTensor), kpt_coordinate[:, 1].type(torch.LongTensor), self.index_17.type(torch.LongTensor), :]
-        kpt_conf = kpt_heatmap[kpt_coordinate[:, 0].type(torch.LongTensor), kpt_coordinate[:, 1].type(torch.LongTensor), self.index_17.type(torch.LongTensor)].reshape(17, 1)
+        kpt_offset = kpt_offset.view(-1, 17, 2)
+        kpt_top_inds = kpt_top_inds.unsqueeze(2).expand(kpt_top_inds.size(0), 17, 2)
+        kpt_offset_yx = kpt_offset.gather(0, kpt_top_inds).squeeze(0)
 
         kpt_coordinate= (kpt_offset_yx + kpt_coordinate) * 0.02083333395421505
-        kpt_with_conf = torch.cat([kpt_coordinate, kpt_conf], dim=1).reshape((1, 1, 17, 3))
+        kpt_with_conf = torch.cat([kpt_coordinate, kpt_conf.unsqueeze(1)], dim=1).reshape((1, 1, 17, 3))
 
         return kpt_with_conf
 
