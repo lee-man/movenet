@@ -17,15 +17,13 @@ python main.py single_pose --exp_id yoga_movenet --dataset active --arch movenet
 ## Run evaluation code
 ```bash
 cd src
-python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume --gpus -1
+python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume
 ```
 To directly test the pre-trained Movenet, run:
 ```bash
 cd src
-python test.py single_pose --exp_id movenet --dataset active --arch movenet --load_model ../models/movenet.pth --gpus -1
+python test.py single_pose --exp_id movenet --dataset active --arch movenet --load_model ../models/movenet.pth
 ```
-
-Note: wil make it support testing using GPUs.
 ## Run demo code
 1. For the finetuned model, move the checkpoint to directory `models` and run:
    ```bash
