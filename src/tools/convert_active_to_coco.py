@@ -5,7 +5,6 @@ Author: Min LI
 
 TODO: Check whether keypoint mapping from MPII to COCO is correct.
 '''
-
 from PIL import Image
 import os
 import os.path as osp
