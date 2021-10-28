@@ -104,10 +104,11 @@ for img_id in train_index:
         continue
     # 20% extend    
     else:
-        bbox[0] = (xmin + xmax)/2. - width/2*1.2
-        bbox[1] = (ymin + ymax)/2. - height/2*1.2
-        bbox[2] = width*1.2
-        bbox[3] = height*1.2
+        bbox[0] = ((xmin + xmax)/2. - width/2*1.2) if(((xmin + xmax)/2. - width/2*1.2)>0) else 0 
+        bbox[1] = ((ymin + ymax)/2. - height/2*1.2) if(((ymin + ymax)/2. - height/2*1.2)>0) else 0
+        bbox[2] = width*1.2 if ((bbox[0]+width*1.2)<w) else (w-bbox[0])
+        bbox[3] = height*1.2 if ((bbox[1]+height*1.2)<w) else (h-bbox[1])
+
     person_dict = {'id': aid, 'image_id': aid, 'category_id': 1, 'area': bbox[2]*bbox[3],'bbox':bbox.tolist(), 'iscrowd': 0, 'keypoints': kps.reshape(-1).tolist(), 'num_keypoints':int(np.sum(kps[:,2]==2))}
     coco_train['annotations'].append(person_dict)
     aid += 1
@@ -158,10 +159,11 @@ for img_id in val_index:
         continue
     # 20% extend    
     else:
-        bbox[0] = (xmin + xmax)/2. - width/2*1.2
-        bbox[1] = (ymin + ymax)/2. - height/2*1.2
-        bbox[2] = width*1.2
-        bbox[3] = height*1.2
+        bbox[0] = ((xmin + xmax)/2. - width/2*1.2) if(((xmin + xmax)/2. - width/2*1.2)>0) else 0 
+        bbox[1] = ((ymin + ymax)/2. - height/2*1.2) if(((ymin + ymax)/2. - height/2*1.2)>0) else 0
+        bbox[2] = width*1.2 if ((bbox[0]+width*1.2)<w) else (w-bbox[0])
+        bbox[3] = height*1.2 if ((bbox[1]+height*1.2)<w) else (h-bbox[1])
+
     person_dict = {'id': aid, 'image_id': aid, 'category_id': 1, 'area': bbox[2]*bbox[3],'bbox':bbox.tolist(), 'iscrowd': 0, 'keypoints': kps.reshape(-1).tolist(), 'num_keypoints':int(np.sum(kps[:,2]==2))}
     coco_val['annotations'].append(person_dict)
     aid += 1
