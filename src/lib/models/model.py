@@ -18,7 +18,7 @@ _model_factory = {
 def create_model(arch, heads, head_conv, froze_backbone):
     arch = arch[:arch.find('_')] if '_' in arch else arch
     get_model = _model_factory[arch]
-    model = get_model(heads=heads, head_conv=head_conv, froze_backbone=froze_backbone)
+    model = get_model(heads=heads, head_conv=head_conv, froze_backbone=froze_backbone, model_type = 'thunder')
     return model
 
 

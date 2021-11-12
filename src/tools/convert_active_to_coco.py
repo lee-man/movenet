@@ -5,7 +5,6 @@ Author: Min LI
 
 TODO: Check whether keypoint mapping from MPII to COCO is correct.
 '''
-
 from PIL import Image
 import os
 import os.path as osp
@@ -79,21 +78,24 @@ for img_id in train_index:
     
     bbox = np.zeros((4)) # xmin, ymin, w, h
     kps = np.zeros((joint_num, 3)) # xcoord, ycoord, vis
+    ori_kps = []
+
     #kps
     for jid in range(16):
         if (joint_mapping[str(jid)] == -1): continue
         kps[joint_mapping[str(jid)]][0] = active[img_id]["joints"][jid][0]
         kps[joint_mapping[str(jid)]][1] = active[img_id]["joints"][jid][1]
         kps[joint_mapping[str(jid)]][2] = active[img_id]["joint_vis"][jid] + 1
+        ori_kps.append([active[img_id]["joints"][jid][0],active[img_id]["joints"][jid][1]])
     kps[1:5] = np.zeros((4, 3))
-
+    ori_kps = np.asarray(ori_kps)
 
     #bbox extract from annotated kps
-    annot_kps = kps.reshape(-1,3)
-    xmin = np.min(annot_kps[:,0])
-    ymin = np.min(annot_kps[:,1])
-    xmax = np.max(annot_kps[:,0])
-    ymax = np.max(annot_kps[:,1])
+    
+    xmin = np.min(ori_kps[:,0])
+    ymin = np.min(ori_kps[:,1])
+    xmax = np.max(ori_kps[:,0])
+    ymax = np.max(ori_kps[:,1])
     width = xmax - xmin - 1
     height = ymax - ymin - 1
     
@@ -102,10 +104,11 @@ for img_id in train_index:
         continue
     # 20% extend    
     else:
-        bbox[0] = (xmin + xmax)/2. - width/2*1.2
-        bbox[1] = (ymin + ymax)/2. - height/2*1.2
-        bbox[2] = width*1.2
-        bbox[3] = height*1.2
+        bbox[0] = ((xmin + xmax)/2. - width/2*1.2) if(((xmin + xmax)/2. - width/2*1.2)>0) else 0 
+        bbox[1] = ((ymin + ymax)/2. - height/2*1.2) if(((ymin + ymax)/2. - height/2*1.2)>0) else 0
+        bbox[2] = width*1.2 if ((bbox[0]+width*1.2)<w) else (w-bbox[0])
+        bbox[3] = height*1.2 if ((bbox[1]+height*1.2)<w) else (h-bbox[1])
+
     person_dict = {'id': aid, 'image_id': aid, 'category_id': 1, 'area': bbox[2]*bbox[3],'bbox':bbox.tolist(), 'iscrowd': 0, 'keypoints': kps.reshape(-1).tolist(), 'num_keypoints':int(np.sum(kps[:,2]==2))}
     coco_train['annotations'].append(person_dict)
     aid += 1
@@ -131,21 +134,23 @@ for img_id in val_index:
     
     bbox = np.zeros((4)) # xmin, ymin, w, h
     kps = np.zeros((joint_num, 3)) # xcoord, ycoord, vis
+    ori_kps = []
     #kps
     for jid in range(16):
         if (joint_mapping[str(jid)] == -1): continue
         kps[joint_mapping[str(jid)]][0] = active[img_id]["joints"][jid][0]
         kps[joint_mapping[str(jid)]][1] = active[img_id]["joints"][jid][1]
         kps[joint_mapping[str(jid)]][2] = active[img_id]["joint_vis"][jid] + 1
+        ori_kps.append([active[img_id]["joints"][jid][0],active[img_id]["joints"][jid][1]])
     kps[1:5] = np.zeros((4, 3))
 
 
     #bbox extract from annotated kps
-    annot_kps = kps.reshape(-1,3)
-    xmin = np.min(annot_kps[:,0])
-    ymin = np.min(annot_kps[:,1])
-    xmax = np.max(annot_kps[:,0])
-    ymax = np.max(annot_kps[:,1])
+    ori_kps = np.asarray(ori_kps)
+    xmin = np.min(ori_kps[:,0])
+    ymin = np.min(ori_kps[:,1])
+    xmax = np.max(ori_kps[:,0])
+    ymax = np.max(ori_kps[:,1])
     width = xmax - xmin - 1
     height = ymax - ymin - 1
     
@@ -154,10 +159,11 @@ for img_id in val_index:
         continue
     # 20% extend    
     else:
-        bbox[0] = (xmin + xmax)/2. - width/2*1.2
-        bbox[1] = (ymin + ymax)/2. - height/2*1.2
-        bbox[2] = width*1.2
-        bbox[3] = height*1.2
+        bbox[0] = ((xmin + xmax)/2. - width/2*1.2) if(((xmin + xmax)/2. - width/2*1.2)>0) else 0 
+        bbox[1] = ((ymin + ymax)/2. - height/2*1.2) if(((ymin + ymax)/2. - height/2*1.2)>0) else 0
+        bbox[2] = width*1.2 if ((bbox[0]+width*1.2)<w) else (w-bbox[0])
+        bbox[3] = height*1.2 if ((bbox[1]+height*1.2)<w) else (h-bbox[1])
+
     person_dict = {'id': aid, 'image_id': aid, 'category_id': 1, 'area': bbox[2]*bbox[3],'bbox':bbox.tolist(), 'iscrowd': 0, 'keypoints': kps.reshape(-1).tolist(), 'num_keypoints':int(np.sum(kps[:,2]==2))}
     coco_val['annotations'].append(person_dict)
     aid += 1

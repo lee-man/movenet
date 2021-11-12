@@ -37,8 +37,8 @@ class BaseDetector(object):
     def pre_process(self, image, meta=None):
         height, width = image.shape[0:2]
 
-        new_height = 192
-        new_width = 192
+        new_height = 256#192
+        new_width = 256#192
 
         inp_height = new_height
         inp_width = new_width

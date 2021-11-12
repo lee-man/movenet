@@ -53,9 +53,33 @@ def mobilenet_backbone(
     norm_layer=misc_nn_ops.FrozenBatchNorm2d,
     trainable_layers=2,
     returned_layers=None,
-    extra_blocks=None
+    extra_blocks=None,
+    model_type='lighting'
 ):
-    backbone = mobilenet_v2(pretrained=pretrained, norm_layer=norm_layer).features
+    if model_type == 'lighting':
+        inverted_residual_setting = [
+            # t, c, n, s
+            [1, 16, 1, 1],
+            [6, 24, 2, 2],
+            [6, 32, 3, 2],
+            [6, 64, 4, 2],
+            [6, 96, 3, 1],
+            [6, 160, 3, 2],
+            [6, 320, 1, 1],
+        ]
+    else:
+        inverted_residual_setting = [
+            # t, c, n, s
+            [1, 32, 1, 1],
+            [6, 40, 2, 2],
+            [6, 56, 3, 2],
+            [6, 112, 4, 2],
+            [6, 168, 3, 1],
+            [6, 280, 3, 2],
+            [6, 560, 1, 1],
+        ]
+
+    backbone = mobilenet_v2(pretrained=pretrained, norm_layer=norm_layer, inverted_residual_setting = inverted_residual_setting).features
     # print("backbone: ", backbone)
 
     # Gather the indices of blocks which are strided. These are the locations of C1, ..., Cn-1 blocks.

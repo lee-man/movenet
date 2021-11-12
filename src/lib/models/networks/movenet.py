@@ -118,7 +118,7 @@ class MoveNet(nn.Module):
     def _top_with_center(self, center):
         scores = center * self.weight_to_center
 
-        top_ind = torch.argmax(scores.view(1, 48 * 48, 1), dim=1)
+        top_ind = torch.argmax(scores.view(1, self.ft_size * self.ft_size, 1), dim=1)
         return top_ind
 
     def _center_to_kpt(self, kpt_regress, ct_ind, ft_size=48):
@@ -140,7 +140,7 @@ class MoveNet(nn.Module):
         dist_weight = torch.sqrt(y * y + x * x) + 1.8
         
         scores = kpt_heatmap / dist_weight
-        scores = scores.reshape((1, 48 * 48, 17))
+        scores = scores.reshape((1, self.ft_size * self.ft_size, 17))
         top_inds = torch.argmax(scores, dim=1)
         
         return top_inds
@@ -158,7 +158,7 @@ class MoveNet(nn.Module):
         kpt_top_inds = kpt_top_inds.unsqueeze(2).expand(kpt_top_inds.size(0), 17, 2)
         kpt_offset_yx = kpt_offset.gather(0, kpt_top_inds).squeeze(0)
 
-        kpt_coordinate= (kpt_offset_yx + kpt_coordinate) * 0.02083333395421505
+        kpt_coordinate= (kpt_offset_yx + kpt_coordinate) * (1/size)
         kpt_with_conf = torch.cat([kpt_coordinate, kpt_conf.unsqueeze(1)], dim=1).reshape((1, 1, 17, 3))
 
         return kpt_with_conf
@@ -166,10 +166,28 @@ class MoveNet(nn.Module):
 
 
 
-def get_pose_net(heads, head_conv=96, froze_backbone=True):
-    backbone = mobilenet_backbone('mobilenet_v2', pretrained=False, fpn=True)
+# def get_pose_net(heads, head_conv=96, froze_backbone=True):
+#     backbone = mobilenet_backbone('mobilenet_v2', pretrained=False, fpn=True)
+#     if froze_backbone:
+#         for param in backbone.parameters():
+#             param.requires_grad = False
+#     model = MoveNet(backbone, heads, head_conv=head_conv)
+#     return model
+
+def get_pose_net(heads, head_conv=96, froze_backbone=True, model_type = 'lighting'):
+    backbone = mobilenet_backbone('mobilenet_v2', pretrained=False, fpn=True, trainable_layers=0, model_type = model_type)
     if froze_backbone:
         for param in backbone.parameters():
             param.requires_grad = False
-    model = MoveNet(backbone, heads, head_conv=head_conv)
+    if model_type == 'lighting':
+        ft_size = 48
+    else:
+        ft_size = 64
+    model = MoveNet(backbone, heads, head_conv=head_conv, ft_size = ft_size)
+    # froze
+    '''for k,v in model.named_parameters():
+        head_name = k.split('.')[0]
+        if head_name == 'hm' or head_name == 'hps':
+            v.requires_grad = False'''
+
     return model

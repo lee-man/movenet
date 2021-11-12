@@ -1,9 +1,16 @@
 *.jpg
+*.txt
+pre/*
 legacy/*
+src/_site/*
+.idea/*
+.jekyll-cache
 .DS_Store
 debug/*
 *.DS_Store
 *.json
+images/*
+images_bak/*
 *.mat
 src/.vscode/*
 preds/*
