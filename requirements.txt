@@ -3,5 +3,4 @@ Cython
 numba
 progress
 matplotlib
-easydict
 scipy
