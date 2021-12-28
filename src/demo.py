@@ -27,15 +27,19 @@ def demo(opt):
     cam = cv2.VideoCapture(0 if opt.demo == 'webcam' else opt.demo)
     detector.pause = False
     while True:
-        _, img = cam.read()
-        cv2.imshow('input', img)
+        success, img = cam.read()
+        if not success:
+          print("no more images, close.")
+          return
+        if opt.debug < 4:
+          cv2.imshow('input', img)
         ret = detector.run(img)
         time_str = ''
         for stat in time_stats:
           time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
         print(time_str)
-        if cv2.waitKey(1) == 27:
-            return  # esc to quit
+        if opt.debug < 4 and cv2.waitKey(1) == 27:
+          return  # esc to quit
   else:
     if os.path.isdir(opt.demo):
       image_names = []

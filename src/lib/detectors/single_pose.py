@@ -68,7 +68,10 @@ class SinglePoseDetector(BaseDetector):
             torch.sigmoid(output['hm_hp'][0]).detach().cpu().numpy())
         debugger.add_blend_img(img, pred, 'pred_hmhp')
 
-    def show_results(self, debugger, image, results):
+    def show_results(self, debugger, image, results, prefix=''):
         debugger.add_img(image, img_id='single_pose')
         debugger.add_coco_hp(results, img_id='single_pose', vis_thresh=self.vis_thresh)
-        debugger.show_all_imgs(pause=self.pause)
+        if self.opt.debug < 4:
+            debugger.show_all_imgs(pause=self.pause)
+        else:
+            debugger.save_all_imgs(prefix=prefix)

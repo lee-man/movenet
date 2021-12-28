@@ -55,6 +55,12 @@ def multi_pose_post_process(dets, c, s, h, w):
 
 def single_pose_post_process(dets, h, w):
   # post_process for Movenet especially
-  dets[:, 0] = dets[:, 0] * h
-  dets[:, 1] = dets[:, 1] * w
+  # restore is the original size is not square.
+  longEdge = max(h, w)
+  dets[:, 0] = dets[:, 0] * longEdge
+  dets[:, 1] = dets[:, 1] * longEdge
+  if h > w:
+    dets[:, 1] = dets[:, 1] - (h - w) // 2
+  elif w > h:
+    dets[:, 0] = dets[:, 0] - (w - h) // 2
   return dets
