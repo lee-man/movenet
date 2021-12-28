@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import numpy as np
 import cv2
+import os
 
 
 class Debugger(object):
@@ -196,10 +197,12 @@ class Debugger(object):
                     self.plt.imshow(v)
             self.plt.show()
 
-    def save_img(self, imgId='default', path='./cache/debug/'):
+    def save_img(self, imgId='default', path='../exp/cache/debug/'):
+        if not os.path.exists(path):
+            os.makedirs(path)
         cv2.imwrite(path + '{}.png'.format(imgId), self.imgs[imgId])
 
-    def save_all_imgs(self, path='./cache/debug/', prefix='', genID=False):
+    def save_all_imgs(self, path='../exp/cache/debug/', prefix='', genID=False):
         if genID:
             try:
                 idx = int(np.loadtxt(path + '/id.txt'))
@@ -207,8 +210,12 @@ class Debugger(object):
                 idx = 0
             prefix = idx
             np.savetxt(path + '/id.txt', np.ones(1) * (idx + 1), fmt='%d')
+        if prefix == '':
+            prefix = str(np.random.randint(10000))
+        if not os.path.exists(path):
+            os.makedirs(path)
         for i, v in self.imgs.items():
-            cv2.imwrite(path + '/{}{}.png'.format(prefix, i), v)
+            assert cv2.imwrite(os.path.join(path, '{}{}.png'.format(prefix, i)), v)
 
     def remove_side(self, img_id, img):
         if not (img_id in self.imgs):

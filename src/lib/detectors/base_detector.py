@@ -33,9 +33,22 @@ class BaseDetector(object):
         self.num_classes = opt.num_classes
         self.opt = opt
         self.pause = True
+        self.global_num = 0
 
     def pre_process(self, image, meta=None):
         height, width = image.shape[0:2]
+
+        # padding all images to be square.
+        if height > width:
+            diff = height - width
+            image = cv2.copyMakeBorder(
+                image, 0, 0, int(diff//2), int(diff//2 + diff%2),
+                cv2.BORDER_CONSTANT, value=(0,0,0))
+        elif height < width:
+            diff = width - height
+            image = cv2.copyMakeBorder(
+                image, int(diff//2), int(diff//2+diff%2), 0, 0,
+                cv2.BORDER_CONSTANT, value=(0,0,0))
 
         new_height = 256#192
         new_width = 256#192
@@ -117,7 +130,8 @@ class BaseDetector(object):
         tot_time += end_time - start_time
 
         if self.opt.debug >= 1:
-            self.show_results(debugger, image, results)
+            self.show_results(debugger, image, results, prefix=self.global_num)
+            self.global_num += 1
 
         return {'results': results, 'tot': tot_time, 'load': load_time,
                 'pre': pre_time, 'net': net_time, 'dec': dec_time,
