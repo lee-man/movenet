@@ -28,11 +28,14 @@ class SinglePoseDetector(BaseDetector):
         self.flip_idx = opt.flip_idx
         self.vis_thresh = opt.vis_thresh
 
-    def process(self, images, return_time=False):
+    def process(self, images,name, return_time=False):
         with torch.no_grad():
             # torch.cuda.synchronize()
+            # images(3,256,256)
+            # output: dict:4 {hm,hos,hm_hp,hp_offset}
+            # images = (1,3,256,256)
             output = self.model(images)[0]
-            dets = self.model.decode(output)
+            dets = self.model.decode(output,name)
             # torch.cuda.synchronize()
             forward_time = time.time()
 
@@ -64,11 +67,20 @@ class SinglePoseDetector(BaseDetector):
             img * self.std + self.mean) * 255.), 0, 255).astype(np.uint8)
         pred = debugger.gen_colormap(torch.sigmoid(output['hm'][0]).detach().cpu().numpy())
         debugger.add_blend_img(img, pred, 'pred_hm')
+        # torch.sigmoid(output['hm_hp'][0][13].resize(1,64,64)).detach().cpu().numpy())
         pred = debugger.gen_colormap_hp(
             torch.sigmoid(output['hm_hp'][0]).detach().cpu().numpy())
+        #pred = debugger.gen_colormap_hp(
+        #    torch.sigmoid(output['hm_hp'][0][15]).detach().cpu().numpy())
         debugger.add_blend_img(img, pred, 'pred_hmhp')
-
-    def show_results(self, debugger, image, results):
+    def show_34_results(self, debugger, img_name, image, results):
+        # image is ori image
         debugger.add_img(image, img_id='single_pose')
         debugger.add_coco_hp(results, img_id='single_pose', vis_thresh=self.vis_thresh)
-        debugger.show_all_imgs(pause=self.pause)
+        debugger.show_all_imgs(img_name, pause=self.pause)
+
+    def show_results(self, debugger, img_name, image, results):
+        # image is ori image
+        debugger.add_img(image, img_id='single_pose')
+        debugger.add_coco_hp(results, img_id='single_pose', vis_thresh=self.vis_thresh)
+        debugger.show_all_imgs(img_name,pause=self.pause)

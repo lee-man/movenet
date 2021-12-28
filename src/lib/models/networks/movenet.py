@@ -22,7 +22,7 @@ import torch
 import torch.nn as nn
 from .backbone_utils import mobilenet_backbone
 import torch.utils.model_zoo as model_zoo
-
+from opts import opts
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
 
@@ -67,30 +67,43 @@ class MoveNet(nn.Module):
         device = x.device
         self.weight_to_center = self.weight_to_center.to(device)
         self.dist_y, self.dist_x = self.dist_y.to(device), self.dist_x.to(device)
-
+        # x = (1,24,64,64)
         x = self.backbone(x)
         ret = {}
+        # x = (1,24,64,64)
+        # self.heads = {'hm': 1, 'hps': 34, 'hm_hp': 17, 'hp_offset': 34}
         for head in self.heads:
+            # self.__getattr__('hps') return Sequential(Conv2d)(x) =>
             ret[head] = self.__getattr__(head)(x)
 
         return [ret]
 
-    def decode(self, x):
+    def decode(self, x,name):
         kpt_heatmap, center, kpt_regress, kpt_offset = x['hm_hp'].squeeze(0).permute((1, 2, 0)), x['hm'].squeeze(0).permute((1, 2, 0)), x['hps'].squeeze(0).permute((1, 2, 0)), x['hp_offset'].squeeze(0).permute((1, 2, 0))
+        # kpt_heatmap(17,64,64)
+        # center(64,64,1)
+        # kpt_regress(64,64,34)
+        # kpt_offset(64,64,34)
 
          # pose decode
         kpt_heatmap = torch.sigmoid(kpt_heatmap)
+
+        #np.save('/Users/rachel/PycharmProjects/movenet/experiments/1222test/npy/'+name+'.npy', kpt_heatmap)
         center = torch.sigmoid(center)
 
         ct_ind = self._top_with_center(center)
 
         kpt_coor = self._center_to_kpt(kpt_regress, ct_ind)
-
+        # kpt_top_inds is using regress calc to heatmap
         kpt_top_inds = self._kpt_from_heatmap(kpt_heatmap, kpt_coor)
-
-        kpt_with_conf = self._kpt_from_offset(kpt_offset, kpt_top_inds, kpt_heatmap, self.ft_size)
-        
-        return kpt_with_conf
+        # make offset as 0
+        # kpt_offset=torch.zeros(64,34,34)
+        kpt_with_conf1 = self._kpt_from_offset(kpt_offset, kpt_top_inds[0], kpt_heatmap, self.ft_size)
+        kpt_with_conf2 = self._kpt_from_offset(kpt_offset, kpt_top_inds[1], kpt_heatmap, self.ft_size)
+        # kpt_list = [kpt_with_conf1,kpt_with_conf2]
+        kpt_list = [kpt_with_conf1,kpt_with_conf2]
+        #return kpt_with_ckonf1
+        return kpt_list
 
         
     def _draw(self, ft):
@@ -135,16 +148,39 @@ class MoveNet(nn.Module):
         return kpt_coor
 
     def _kpt_from_heatmap(self, kpt_heatmap, kpt_coor):
+        # kpt_heatmap: (64,64,17)
+        # be 34
         y = self.dist_y - kpt_coor[:, 0].reshape(1, 1, 17)
         x = self.dist_x - kpt_coor[:, 1].reshape(1, 1, 17)
-        dist_weight = torch.sqrt(y * y + x * x) + 1.8
-        
+        #dist_weight = torch.sqrt(y * y + x * x) + 1.8
+        dist_weight = 1
         scores = kpt_heatmap / dist_weight
         scores = scores.reshape((1, self.ft_size * self.ft_size, 17))
+        # tensor(1,17)
         top_inds = torch.argmax(scores, dim=1)
-        
-        return top_inds
-    
+        # shape(1,2,17)
+        second_inds = []
+        top2_inds = torch.topk(scores,5,dim=1).indices
+        x = [[int(top2_inds[0][j][i]) for i in range(17)] for j in range(5)]
+        indexes = [[x[i][j] for i in range(5)] for j in range(17)]
+        for i in range(len(indexes)):
+            base = indexes[i][0]
+            y = []
+            for j in indexes[i][1:]:
+                if(abs(j-base)>1):
+                    y.append(j)
+            second_inds.append(y)
+        second_inds = torch.as_tensor([k[0] for k in second_inds]).resize(1,17)
+        ret_top2_inds = []
+        ret_top2_inds.append(top_inds)
+        ret_top2_inds.append(second_inds)
+        #top_and_second = top_inds+n_second_inds
+        return ret_top2_inds
+    # heatmap: 64*64
+    # kpt_offset = (4096,17,2)
+    # kpt_top_inds = (1,17,2)
+    # hpt_heatmap = (4076,17)
+
     def _kpt_from_offset(self, kpt_offset, kpt_top_inds, kpt_heatmap, size=48):
         kpts_ys = torch.div(kpt_top_inds, size, rounding_mode='floor')
         # kpts_ys = (kpt_top_inds.float() / size).int().float()
@@ -152,6 +188,7 @@ class MoveNet(nn.Module):
         kpt_coordinate = torch.stack((kpts_ys.squeeze(0), kpts_xs.squeeze(0)), dim=1)
 
         kpt_heatmap = kpt_heatmap.view(-1, 17)
+
         kpt_conf = kpt_heatmap.gather(0, kpt_top_inds).squeeze(0)
 
         kpt_offset = kpt_offset.view(-1, 17, 2)
@@ -185,6 +222,12 @@ def get_pose_net(heads, head_conv=96, froze_backbone=True, model_type = 'lightin
         ft_size = 64
     model = MoveNet(backbone, heads, head_conv=head_conv, ft_size = ft_size)
     # froze
+    opt = opts().parse()
+    fix_heads = opt.fix_heads
+    for k, v in model.named_parameters():
+        head_name = k.split('.')[0]
+        if head_name in fix_heads:
+            v.requires_grad = False
     '''for k,v in model.named_parameters():
         head_name = k.split('.')[0]
         if head_name == 'hm' or head_name == 'hps':

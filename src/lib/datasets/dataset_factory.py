@@ -14,11 +14,16 @@ dataset_factory = {
   'coco_hp': COCOHP,
   'active': ACTIVE,
   'active_coco': ACTIVE,
+  'active_pair': ACTIVE,
+  'crop_square':ACTIVE,
+  'failure_case':ACTIVE
 }
 
 _sample_factory = {
   'multi_pose': MultiPoseDataset,
   'single_pose': SinglePoseDataset,
+  'aist_add':ACTIVE,
+  'failure_case':ACTIVE
 }
 
 

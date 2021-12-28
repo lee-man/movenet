@@ -118,15 +118,20 @@ class ACTIVE(data.Dataset):
         detections = []
         for image_id in all_dets:
             category_id = 1
-            dets = all_dets[image_id]
+            dets = all_dets[image_id][0]
             bbox = self.bbox_from_kpt(dets)
             bbox_out = list(map(self._to_float, bbox))
             score = np.sum(dets[:, 2]) / 4
-            keypoints = np.concatenate([
+            # np.ones(17,1)
+            '''keypoints = np.concatenate([
                 dets[:, [1, 0]],
                 np.ones((17, 1), dtype=np.float32)], axis=1)
-            keypoints[1:5] = np.zeros((4, 3))
-            keypoints = keypoints.reshape(51).tolist()
+            keypoints[1:5] = np.zeros((4, 3))'''
+            # keypoints = np.append(all_dets[image_id][0],all_dets[image_id][1],axis=0)
+            #
+            keypoints = all_dets[image_id]
+            # 51
+            keypoints = np.array(keypoints).reshape(102).tolist()
             keypoints = list(map(self._to_float, keypoints))
             detection = {
                 "image_id": int(image_id),
@@ -147,8 +152,10 @@ class ACTIVE(data.Dataset):
 
     def run_eval(self, results, save_dir):
         self.save_results(results, save_dir)
+        # really bad
         coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
-        coco_eval = COCOeval(self.coco, coco_dets, "keypoints")
+        # some are better
+        '''coco_eval = COCOeval(self.coco, coco_dets, "keypoints")
         coco_eval.evaluate()
         coco_eval.accumulate()
-        coco_eval.summarize()
+        coco_eval.summarize()'''

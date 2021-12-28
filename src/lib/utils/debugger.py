@@ -2,9 +2,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os.path
+
 import numpy as np
 import cv2
-
+from opts import opts
+from matplotlib import cm
+from PIL import Image
 
 class Debugger(object):
     def __init__(self, ipynb=False, theme='black',
@@ -44,7 +48,7 @@ class Debugger(object):
                               (255, 0, 0), (0, 0, 255), (255, 0, 0), (0, 0, 255),
                               (255, 0, 0), (0, 0, 255)]
 
-        num_classes = len(self.names)
+        #num_classes = len(self.names)
         self.down_ratio = down_ratio
 
     def add_img(self, img, img_id='default', revert_color=False):
@@ -72,6 +76,7 @@ class Debugger(object):
         self.imgs[img_id] = (back * (1. - trans) + fore * trans)
         self.imgs[img_id][self.imgs[img_id] > 255] = 255
         self.imgs[img_id][self.imgs[img_id] < 0] = 0
+
         self.imgs[img_id] = self.imgs[img_id].astype(np.uint8).copy()
 
     def gen_colormap(self, img, output_res=None):
@@ -132,7 +137,32 @@ class Debugger(object):
                         keypoint_coords[right][::-1]]).astype(np.int32),
             )
         return results
-    
+    def draw_selected_skel_and_kp(
+        self, img, kpt_with_conf,index, conf_thres=0.3):
+
+        out_img = img
+        height, width, _ = img.shape
+        adjacent_keypoints = []
+        cv_keypoints = []
+
+        keypoint_scores = kpt_with_conf[:, 2]
+        keypoint_coords = kpt_with_conf[:, :2]
+        left_knee=np.array([397,479])
+        new_keypoints = self.get_adjacent_keypoints(
+            keypoint_scores, keypoint_coords, conf_thres)
+        adjacent_keypoints.extend(new_keypoints)
+        '''for ks, kc in zip(keypoint_scores, keypoint_coords):
+            if ks < conf_thres:
+                continue'''
+        cv_keypoints.append(cv2.KeyPoint(keypoint_coords[index][1], keypoint_coords[index][0], 5))
+        #cv_keypoints.append(cv2.KeyPoint(keypoint_coords[16][1], keypoint_coords[16][0], 5))
+
+        if cv_keypoints:
+            out_img = cv2.drawKeypoints(
+                out_img, cv_keypoints, outImage=np.array([]), color=(255, 255, 0),
+                flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        out_img = cv2.polylines(out_img, adjacent_keypoints, isClosed=False, color=(255, 255, 0))
+        return out_img
     def draw_skel_and_kp(
         self, img, kpt_with_conf, conf_thres=0.3):
 
@@ -158,8 +188,11 @@ class Debugger(object):
                 flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         out_img = cv2.polylines(out_img, adjacent_keypoints, isClosed=False, color=(255, 255, 0))
         return out_img
+    def add_34_coco_hp(self,kpt_with_conf, img_id='default', vis_thresh=0.3):
+        self.imgs[img_id] = self.draw_skel_and_kp(self.imgs[img_id], kpt_with_conf, vis_thresh)
 
     def add_coco_hp(self, kpt_with_conf, img_id='default', vis_thresh=0.3):
+
         self.imgs[img_id] = self.draw_skel_and_kp(self.imgs[img_id], kpt_with_conf, vis_thresh)
 
     def add_points(self, points, img_id='default'):
@@ -175,13 +208,48 @@ class Debugger(object):
                                                points[i][j][1] * self.down_ratio),
                            3, (int(c[0]), int(c[1]), int(c[2])), -1)
 
-    def show_all_imgs(self, pause=False, time=0):
+    def pinjie(self,imgs,path):
+        name = path.split('/')[-1]
+        p = path.replace(name,'')
+        npath = os.path.join(p,'/Users/rachel/PycharmProjects/movenet/experiments/1222test/failure_visual/'+name)
+        ims = []
+        nimgs = []
+        for j in imgs:
+            img = cv2.cvtColor(j, cv2.COLOR_BGR2RGB)
+            im = Image.fromarray(img)
+            nimgs.append(im)
+        ims.append(nimgs[0].resize((256,int(nimgs[0].size[0]/nimgs[0].size[1]*256) ), Image.BILINEAR))
+        ims.append(nimgs[1].resize((256, int(nimgs[0].size[0]/nimgs[0].size[1]*256) ), Image.BILINEAR))
+        ims.append(nimgs[2])
+
+        '''for i in nimgs:
+            #new_img = i.resize((1280, 1280), Image.BILINEAR)
+            ims.append(i.resize((1280, 1280), Image.BILINEAR))'''
+        # 单幅图像尺寸
+        width, height = ims[2].size
+        # 创建空白长图
+        result = Image.new(ims[2].mode, (width, int(height+257)))
+        # 拼接图片
+        result.paste(ims[2], box=(0, 0))
+        result.paste(ims[1], box=(0, height))
+        result.paste(ims[0], box=(ims[1].size[0] + 1, height))
+        # 保存图片
+        result.save(npath)
+
+    def show_all_imgs(self, img_name,pause=False, time=0):
         if not self.ipynb:
+            ind = 0
+            imgs = []
             for i, v in self.imgs.items():
                 cv2.imshow('{}'.format(i), v)
-            if cv2.waitKey(0 if pause else 1) == 27:
+                #cv2.imwrite('/Users/rachel/PycharmProjects/movenet/experiments/1127test/'+str(ind)+'.jpg',v)
+                ind += 1
+                imgs.append(v)
+            #save_path = opt.save_path
+            self.pinjie(imgs,img_name)
+            '''if cv2.waitKey(0 if pause else 1) == 27:
                 import sys
-                sys.exit(0)
+                sys.exit(0)'''
         else:
             self.ax = None
             nImgs = len(self.imgs)
@@ -192,10 +260,12 @@ class Debugger(object):
                 fig.add_subplot(1, nImgs, i + 1)
                 if len(v.shape) == 3:
                     self.plt.imshow(cv2.cvtColor(v, cv2.COLOR_BGR2RGB))
+
                 else:
                     self.plt.imshow(v)
             self.plt.show()
-
+            self.plt.savefig('/Users/rachel/PycharmProjects/movenet/experiments/1127test/1.png')
+            print('1')
     def save_img(self, imgId='default', path='./cache/debug/'):
         cv2.imwrite(path + '{}.png'.format(imgId), self.imgs[imgId])
 
@@ -228,6 +298,7 @@ class Debugger(object):
         while hs[b] == 0 and b > 0:
             b -= 1
         self.imgs[img_id] = self.imgs[img_id][t:b+1, l:r+1].copy()
+
 
     def add_ct_detection(
             self, img, dets, show_box=False, show_txt=True,

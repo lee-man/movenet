@@ -43,6 +43,18 @@ def test(opt):
         img_info = dataset.coco.loadImgs(ids=[img_id])[0]
         img_path = os.path.join(dataset.img_dir, img_info['file_name'])
 
+        # results = {'hm':(1,1,64,64),'hps':(1,34,64,64),
+        # 'hm_hp':(1,17,64,64),'hp_offset'(1,34,64,64)}
+        #  ret= {'results': results, 'tot': tot_time, 'load': load_time,'pre': pre_time, 'net': net_time, 'dec': dec_time,'post': post_time, 'merge': merge_time}
+
+        # detector.run(img_path)
+        # - cv2.imread(img_path) => (720,1280,3) =>
+        # - base_detector.py line 94 - base_detector.py line 38 pre_process
+        # -
+        # - single_pose line 36
+        # - movenet line67 - movenet line69: ret[head] = self.__getattr__(head)(x); return Sequential(Conv2d)(x)
+        # - ret = {'hm','hps','hm_hp','hp_offset'}
+        # - single_pose line 37 - movenet line 81
         ret = detector.run(img_path)
 
         results[img_id] = ret['results']

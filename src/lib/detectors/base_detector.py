@@ -44,7 +44,7 @@ class BaseDetector(object):
         inp_width = new_width
         c = np.array([new_width // 2, new_height // 2], dtype=np.float32)
         s = np.array([inp_width, inp_height], dtype=np.float32)
-
+        # inp_image = ndarray(256,256,3)
         inp_image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
         inp_image = cv2.cvtColor(inp_image, cv2.COLOR_BGR2RGB).astype(np.float32)
         inp_image = ((inp_image / 127.5 - self.mean) /
@@ -59,7 +59,7 @@ class BaseDetector(object):
                 'out_width': inp_width // self.opt.down_ratio}
         return images, meta
 
-    def process(self, images, return_time=False):
+    def process(self, images,name, return_time=False):
         raise NotImplementedError
 
     def post_process(self, dets, meta, scale=1):
@@ -70,7 +70,8 @@ class BaseDetector(object):
 
     def debug(self, debugger, images, dets, output, scale=1):
         raise NotImplementedError
-
+    def show_34_results(self, debugger, image, results):
+        raise NotImplementedError
     def show_results(self, debugger, image, results):
         raise NotImplementedError
 
@@ -79,6 +80,7 @@ class BaseDetector(object):
         merge_time, tot_time = 0, 0
         debugger = Debugger(dataset=self.opt.dataset, ipynb=(self.opt.debug == 3),
                             theme=self.opt.debugger_theme)
+        #debugger.show_img()
         start_time = time.time()
         if isinstance(image_or_path_or_tensor, np.ndarray):
             image = image_or_path_or_tensor
@@ -97,28 +99,34 @@ class BaseDetector(object):
         # torch.cuda.synchronize()
         pre_process_time = time.time()
         pre_time += pre_process_time - scale_start_time
-        output, dets, forward_time = self.process(images, return_time=True)
+        name = image_or_path_or_tensor.split('/')[-1].replace('.jpg','')
+        output, retdets, forward_time = self.process(images, name,return_time=True)
         # torch.cuda.synchronize()
         net_time += forward_time - pre_process_time
         decode_time = time.time()
         dec_time += decode_time - forward_time
-        if self.opt.debug >= 2:
-            self.debug(debugger, images, dets, output)
-        dets = self.post_process(dets, meta)
-        # torch.cuda.synchronize()
-        post_process_time = time.time()
-        post_time += post_process_time - decode_time
-        results = dets
+        dets_list = []
+        for dets in retdets:
+            # 2 values
+            if self.opt.debug >= 2:
+                self.debug(debugger,images, dets, output)
+            dets = self.post_process(dets, meta)
+            # torch.cuda.synchronize()
+            post_process_time = time.time()
+            post_time += post_process_time - decode_time
+            results = dets
+            dets_list.append(results)
 
-        # results = self.merge_outputs(detections)
-        # torch.cuda.synchronize()
-        end_time = time.time()
-        merge_time += end_time - post_process_time
-        tot_time += end_time - start_time
+            # results = self.merge_outputs(detections)
+            # torch.cuda.synchronize()
+            end_time = time.time()
+            merge_time += end_time - post_process_time
+            tot_time += end_time - start_time
+            if self.opt.debug >= 1:
+                self.show_results(debugger,image_or_path_or_tensor, image, results)
+        '''if self.opt.debug >= 1:
+            self.show_34_results(debugger, image_or_path_or_tensor, image, retdets)'''
 
-        if self.opt.debug >= 1:
-            self.show_results(debugger, image, results)
-
-        return {'results': results, 'tot': tot_time, 'load': load_time,
+        return {'results': dets_list, 'tot': tot_time, 'load': load_time,
                 'pre': pre_time, 'net': net_time, 'dec': dec_time,
                 'post': post_time, 'merge': merge_time}

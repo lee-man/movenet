@@ -5,6 +5,14 @@ cd /Users/rachel/PycharmProjects/movenet/src
 # python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume
 # # flip test
 # python test.py single_pose --exp_id yoga_movenet --dataset active --arch movenet --resume --flip_test
-python demo.py single_pose --dataset active --arch movenet --demo ../images/1111error/ --load_model ../models/movenet_thunder.pth --K 1 --gpus -1 --debug 2 #--vis_thresh 0.0 --not_reg_offset
+#python demo.py single_pose --dataset active_pair --arch movenet --demo ../images/1124visual/ --load_model ../models/movenet_thunder.pth --K 1 --gpus -1 --debug 2 --vis_thresh 0.0 #--not_reg_offset
+
+# 1202only_kpt_0.005_2.pth
+python demo.py single_pose --dataset aist_add --arch movenet --demo ../data/add_aist/val --load_model ../models/1213add_aist_aug_0.6_90_0.005.pth --K 1 --gpus -1 --debug 2 --vis_thresh 0.1 #--not_reg_offset
+
+#python demo.py single_pose --dataset active_pair --arch movenet --demo ../experiments/1123test/left_ankle/ --load_model ../models/movenet_thunder.pth --K 1 --gpus -1 --debug 2 --vis_thresh 0.0 #--not_reg_offset
+
+#python demo.py single_pose --dataset active_pair --arch movenet --demo ../experiments/1123test/left_ankle/ --load_model ../models/1120_only_no_center_0.005.pth --K 1 --gpus -1 --debug 2 --vis_thresh 0.0 #--not_reg_offset
 
 cd ..
+# 原版和aug效果最差的后400张
