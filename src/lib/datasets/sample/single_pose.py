@@ -136,10 +136,17 @@ class SinglePoseDataset(data.Dataset):
                             pts[j, :2], trans_output_rot)
                         if pts[j, 0] >= 0 and pts[j, 0] < output_res and \
                            pts[j, 1] >= 0 and pts[j, 1] < output_res:
-                            kps[k, j * 2: j * 2 + 2] = pts[j, :2] - ct_int
+                            # TODO: Check the ordering of y,x here.
+                            # kps[k, j * 2: j * 2 + 2] = pts[j, :2] - ct_int
+                            kps[k, j * 2] = pts[j, 1:2] - ct_int[1]
+                            kps[k, j * 2 + 1] = pts[j, 0:1] - ct_int[0]
+
                             kps_mask[k, j * 2: j * 2 + 2] = 1
                             pt_int = pts[j, :2].astype(np.int32)
-                            hp_offset[k * num_joints + j] = pts[j, :2] - pt_int
+                            # hp_offset[k * num_joints + j] = pts[j, :2] - pt_int
+                            # TODO: Check the ordering of y,x here.
+                            hp_offset[k * num_joints + j][0] = pts[j, 1:2] - pt_int[1]
+                            hp_offset[k * num_joints + j][1] = pts[j, 0:1] - pt_int[0]
                             hp_ind[k * num_joints + j] = pt_int[1] * \
                                 output_res + pt_int[0]
                             hp_mask[k * num_joints + j] = 1
