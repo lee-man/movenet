@@ -282,7 +282,7 @@ def single_pose_decode(
         hm_score, hm_inds, hm_ys, hm_xs = _topk_channel_with_reg_kps(hm_hp, reg_kps, K=K) # b x J x K
 
         hp_offset = _transpose_and_gather_feat_plus(
-            hp_offset, hm_inds.view(batch, -1))
+            hp_offset, hm_inds.view(batch, -1), num_joints)
         hp_offset = hp_offset.view(batch, num_joints, K, 2)
         hm_xs = hm_xs + hp_offset[:, :, :, 0]
         hm_ys = hm_ys + hp_offset[:, :, :, 1]
