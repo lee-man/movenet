@@ -141,6 +141,7 @@ class RegL1Loss(nn.Module):
     super(RegL1Loss, self).__init__()
   
   def forward(self, output, mask, ind, target):
+    num_joints = output.shape[1] // 2
     pred = _transpose_and_gather_feat_plus(output, ind, num_joints)
     mask = mask.unsqueeze(2).expand_as(pred).float()
     # loss = F.l1_loss(pred * mask, target * mask, reduction='elementwise_mean')
