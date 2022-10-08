@@ -45,6 +45,22 @@ class Debugger(object):
                               (255, 0, 0), (0, 0, 255), (255, 0, 0), (0, 0, 255),
                               (255, 0, 0), (0, 0, 255)]
 
+        if dataset in ['active_hand']:
+            self.names = ['h']
+            self.num_class = 1
+            self.num_joints = 6
+            self.edges = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5]]
+            self.ec = [(255, 0, 0), (0, 0, 255), (255, 0, 0), (0, 0, 255),
+                       (255, 0, 0), (0, 0, 255), (255, 0, 255),
+                       (255, 0, 0), (255, 0, 0), (0, 0, 255), (0, 0, 255),
+                       (255, 0, 0), (0, 0, 255), (255, 0, 255),
+                       (255, 0, 0), (255, 0, 0), (0, 0, 255), (0, 0, 255)]
+            self.colors_hp = [(255, 0, 255), (255, 0, 0), (0, 0, 255),
+                              (255, 0, 0), (0, 0, 255), (255, 0, 0), (0, 0, 255),
+                              (255, 0, 0), (0, 0, 255), (255, 0, 0), (0, 0, 255),
+                              (255, 0, 0), (0, 0, 255), (255, 0, 0), (0, 0, 255),
+                              (255, 0, 0), (0, 0, 255)]
+
         num_classes = len(self.names)
         self.down_ratio = down_ratio
 
@@ -125,7 +141,10 @@ class Debugger(object):
     # from movenet-pytorch
     def get_adjacent_keypoints(self, keypoint_scores, keypoint_coords, min_confidence=0.1):
         results = []
-        for left, right in CONNECTED_PART_INDICES:
+        for left, right in self.edges:
+            if left >= self.num_joints or right >= self.num_joints:
+                continue
+
             if keypoint_scores[left] < min_confidence or keypoint_scores[right] < min_confidence:
                 continue
             results.append(

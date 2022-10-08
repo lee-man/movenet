@@ -34,6 +34,7 @@ class MoveNet(nn.Module):
     '''
     def __init__(self, backbone, heads, head_conv, ft_size=48):
         super(MoveNet, self).__init__()
+        self.num_joints = heads["hm_hp"]
         self.out_channels = 24
         self.backbone = backbone
         self.heads = heads
@@ -41,7 +42,7 @@ class MoveNet(nn.Module):
         self.weight_to_center = self._generate_center_dist(self.ft_size).unsqueeze(2)
  
         self.dist_y, self.dist_x = self._generate_dist_map(self.ft_size)
-        self.index_17 = torch.arange(0, 17).float()
+        self.index_17 = torch.arange(0, self.num_joints).float()
 
         for head in self.heads:
             classes = self.heads[head]
@@ -126,8 +127,8 @@ class MoveNet(nn.Module):
         # ct_y = (ct_ind.float() / ft_size).int().float()
         ct_x = ct_ind - ct_y * ft_size
 
-        kpt_regress = kpt_regress.view(-1, 17, 2)
-        ct_ind = ct_ind.unsqueeze(2).expand(ct_ind.size(0), 17, 2)
+        kpt_regress = kpt_regress.view(-1, self.num_joints, 2)
+        ct_ind = ct_ind.unsqueeze(2).expand(ct_ind.size(0), self.num_joints, 2)
         kpt_coor = kpt_regress.gather(0, ct_ind).squeeze(0)
         
         kpt_coor = kpt_coor + torch.cat((ct_y, ct_x), dim=1)
@@ -135,12 +136,12 @@ class MoveNet(nn.Module):
         return kpt_coor
 
     def _kpt_from_heatmap(self, kpt_heatmap, kpt_coor):
-        y = self.dist_y - kpt_coor[:, 0].reshape(1, 1, 17)
-        x = self.dist_x - kpt_coor[:, 1].reshape(1, 1, 17)
+        y = self.dist_y - kpt_coor[:, 0].reshape(1, 1, self.num_joints)
+        x = self.dist_x - kpt_coor[:, 1].reshape(1, 1, self.num_joints)
         dist_weight = torch.sqrt(y * y + x * x) + 1.8
         
         scores = kpt_heatmap / dist_weight
-        scores = scores.reshape((1, self.ft_size * self.ft_size, 17))
+        scores = scores.reshape((1, self.ft_size * self.ft_size, self.num_joints))
         top_inds = torch.argmax(scores, dim=1)
         
         return top_inds
@@ -151,15 +152,15 @@ class MoveNet(nn.Module):
         kpts_xs = kpt_top_inds - kpts_ys * size
         kpt_coordinate = torch.stack((kpts_ys.squeeze(0), kpts_xs.squeeze(0)), dim=1)
 
-        kpt_heatmap = kpt_heatmap.view(-1, 17)
+        kpt_heatmap = kpt_heatmap.view(-1, self.num_joints)
         kpt_conf = kpt_heatmap.gather(0, kpt_top_inds).squeeze(0)
 
-        kpt_offset = kpt_offset.view(-1, 17, 2)
-        kpt_top_inds = kpt_top_inds.unsqueeze(2).expand(kpt_top_inds.size(0), 17, 2)
+        kpt_offset = kpt_offset.view(-1, self.num_joints, 2)
+        kpt_top_inds = kpt_top_inds.unsqueeze(2).expand(kpt_top_inds.size(0), self.num_joints, 2)
         kpt_offset_yx = kpt_offset.gather(0, kpt_top_inds).squeeze(0)
 
         kpt_coordinate= (kpt_offset_yx + kpt_coordinate) * (1/size)
-        kpt_with_conf = torch.cat([kpt_coordinate, kpt_conf.unsqueeze(1)], dim=1).reshape((1, 1, 17, 3))
+        kpt_with_conf = torch.cat([kpt_coordinate, kpt_conf.unsqueeze(1)], dim=1).reshape((1, 1, self.num_joints, 3))
 
         return kpt_with_conf
 

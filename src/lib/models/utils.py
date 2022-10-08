@@ -22,9 +22,9 @@ def _gather_feat(feat, ind, mask=None):
     return feat
 
 
-def _gather_feat_plus(feat, ind):
+def _gather_feat_plus(feat, ind, num_joints):
     # num_objs = ind.size(1) / 17
-    ind = ind.view(ind.size(0), -1, 17)
+    ind = ind.view(ind.size(0), -1, num_joints)
     ind = ind.unsqueeze(3).expand(ind.size(0), ind.size(1), ind.size(2), 2)
     feat = feat.gather(1, ind)
     return feat
@@ -36,10 +36,10 @@ def _transpose_and_gather_feat(feat, ind):
     feat = _gather_feat(feat, ind)
     return feat
 
-def _transpose_and_gather_feat_plus(feat, ind):
+def _transpose_and_gather_feat_plus(feat, ind, num_joints):
     feat = feat.permute(0, 2, 3, 1).contiguous()
-    feat = feat.view(feat.size(0), -1, 17, 2)
-    feat = _gather_feat_plus(feat, ind)
+    feat = feat.view(feat.size(0), -1, num_joints, 2)
+    feat = _gather_feat_plus(feat, ind, num_joints)
     feat = feat.view(feat.size(0), -1, 2)
     return feat
 
@@ -59,10 +59,10 @@ def flip_lr(x, flip_idx):
     return torch.from_numpy(tmp.reshape(shape)).to(x.device)
 
 
-def flip_lr_off(x, flip_idx):
+def flip_lr_off(x, flip_idx, num_joints):
     tmp = x.detach().cpu().numpy()[..., ::-1].copy()
     shape = tmp.shape
-    tmp = tmp.reshape(tmp.shape[0], 17, 2,
+    tmp = tmp.reshape(tmp.shape[0], num_joints, 2,
                       tmp.shape[2], tmp.shape[3])
     tmp[:, :, 0, :, :] *= -1
     for e in flip_idx:
